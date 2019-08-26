@@ -8,8 +8,8 @@ const main = async () => {
     paths.resolve('./'),
   );
 
-  await cliUtils.run(`yarn`);
-  await cliUtils.run('yarn serve', true);
+  await cliUtils.runShell(`yarn`);
+  await cliUtils.runShell('yarn serve', true);
 };
 
 main();
