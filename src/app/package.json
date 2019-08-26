@@ -9,7 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@ys/ys-ui",
+    "@ys/ys-ui": "^1.1.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.1",
