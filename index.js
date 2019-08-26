@@ -16,11 +16,14 @@ import axios from 'axios';
 import moment from 'moment-timezone';
 import numeral from 'numeral';
 import App from './src/components/App.vue';
+import mixinWithLoading from './src/mixins/withLoading';
 
 Vue.config.productionTip = false;
 
 Vue.use(ElementUI);
 Vue.use(Router);
+
+Vue.mixin(mixinWithLoading);
 
 window._ = lodash;
 window.axios = axios;
@@ -50,6 +53,7 @@ function main(params = {}) {
 export {
   Vue,
   lodash,
+  _,
   axios,
   moment,
   numeral,
