@@ -1,0 +1,14 @@
+{
+  "name": "@ys/ys-ui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "Chris Wang",
+  "license": "MIT",
+  "dependencies": {
+    "element-ui": "^2.11.1"
+  },
+  "devDependencies": {
+    "np": "^5.0.3"
+  }
+}
