@@ -10,7 +10,7 @@
     padding: 0;
   }
   * {
-    font-family: Roboto, "Arial";
+    font-family: Roboto, "Arial", "PingFang SC", "Microsoft YaHei";
   }
   pre {
     font-family: "Roboto Mono";

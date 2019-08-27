@@ -17,6 +17,8 @@ import App from './src/components/App.vue';
 import mixinWithLoading from './src/mixins/withLoading';
 import './src/uiComponents';
 
+import views from './src/views';
+
 Vue.config.productionTip = false;
 
 Vue.use(Router);
@@ -57,4 +59,5 @@ export {
   moment,
   numeral,
   main,
+  views,
 };
