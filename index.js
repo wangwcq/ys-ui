@@ -15,6 +15,7 @@ import moment from 'moment-timezone';
 import numeral from 'numeral';
 import App from './src/components/App.vue';
 import mixinWithLoading from './src/mixins/withLoading';
+import mixinHandleRes from './src/mixins/handleRes';
 import './src/uiComponents';
 
 import views from './src/views';
@@ -24,6 +25,7 @@ Vue.config.productionTip = false;
 Vue.use(Router);
 
 Vue.mixin(mixinWithLoading);
+Vue.mixin(mixinHandleRes);
 
 const _ = lodash;
 
