@@ -5,6 +5,9 @@
   "main": "index.js",
   "author": "Chris Wang",
   "license": "MIT",
+  "scripts": {
+    "np": "np --yolo"
+  },
   "dependencies": {
     "@ys/cli-utils": "^1.3.0",
     "@ys/ys-ui": "^1.4.0",

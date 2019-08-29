@@ -1,6 +1,6 @@
 export default {
   methods: {
-    api(api, data, config) {
+    api(api, data, config = {}) {
       return async () => {
         const {
           method = 'POST',

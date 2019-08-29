@@ -16,6 +16,7 @@ import numeral from 'numeral';
 import App from './src/components/App.vue';
 import mixinWithLoading from './src/mixins/withLoading';
 import mixinHandleRes from './src/mixins/handleRes';
+import mixinGlobalData from './src/mixins/globalData';
 import './src/uiComponents';
 
 import views from './src/views';
