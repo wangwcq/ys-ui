@@ -110,45 +110,6 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
   integrity sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==
 
-"@ys/cli-utils@^1.2.0":
-  version "1.2.0"
-  resolved "http://yishitec-npm.pkg.coding.net/ys-ui/ys/@ys/cli-utils/-/@ys/cli-utils-1.2.0/041b6361c54b03721350638b602d06992b9e9728.tgz#041b6361c54b03721350638b602d06992b9e9728"
-  integrity sha512-KRAaYOP1FlvqJv1gcQ9ag8k0PEWCbDlDiYrGwxr43ZJHODv05WuyMy97a+swI9Q4yuQ92LBa0BQHqqThfUhqMQ==
-  dependencies:
-    async-dash "^1.0.3"
-    execa "^2.0.4"
-    lodash "^4.17.15"
-    prompts "^2.2.1"
-
-"@ys/cli-utils@^1.3.0":
-  version "1.3.0"
-  resolved "http://yishitec-npm.pkg.coding.net/ys-ui/ys/@ys/cli-utils/-/@ys/cli-utils-1.3.0/57cd8b82e579ad3a0810e7e3e9272e8e9f341df3.tgz#57cd8b82e579ad3a0810e7e3e9272e8e9f341df3"
-  integrity sha512-05rXvn4T1talPqd9sHh2y60LRwxbzpH/47eHqRFktbARADBtSHz94MlHPwsYej2uG/GeCy3gZ0UMQmnOXSnTGw==
-  dependencies:
-    async-dash "^1.0.3"
-    execa "^2.0.4"
-    lodash "^4.17.15"
-    prompts "^2.2.1"
-
-"@ys/ys-ui@^1.4.0":
-  version "1.4.0"
-  resolved "http://yishitec-npm.pkg.coding.net/ys-ui/ys/@ys/ys-ui/-/@ys/ys-ui-1.4.0/1f45d22d258c4ffe59342fbc1eeac3d3492abbb7.tgz#1f45d22d258c4ffe59342fbc1eeac3d3492abbb7"
-  integrity sha512-z9b0WkYnU0qYLPFwc9LWLDlrHh5lP9RI4aZFM6P2Fdzma+R9KdPVNQFhO/XnX9eV558N3is/F9ZN/6CNwXXwPw==
-  dependencies:
-    "@ys/cli-utils" "^1.2.0"
-    async-dash "^1.0.3"
-    axios "^0.19.0"
-    element-ui "^2.11.1"
-    execa "^2.0.4"
-    fs-extra "^8.1.0"
-    lodash "^4.17.15"
-    moment "^2.24.0"
-    moment-timezone "^0.5.26"
-    numeral "^2.0.6"
-    prompts "^2.2.1"
-    vue "^2.6.10"
-    vue-router "^3.1.2"
-
 accepts@^1.3.5:
   version "1.3.7"
   resolved "https://registry.yarnpkg.com/accepts/-/accepts-1.3.7.tgz#531bc726517a3b2b41f850021c6cc15eaab507cd"
