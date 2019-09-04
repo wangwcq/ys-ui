@@ -1,5 +1,6 @@
 const lodash = require('lodash');
 const Koa = require('koa');
+const serve = require('koa-static');
 const KoaBody = require('koa-body');
 const libRequireDir = require('require-dir');
 const paths = require('path');
@@ -17,6 +18,10 @@ const main = async (config = {}) => {
   const app = new KoaApp(appConfig);
   routers(app.router);
   await app.serverStartup();
+
+  app.app.use(app.koaHistory);
+  app.app.use(serve('./dist'));
+
   app.serve();
 };
 
