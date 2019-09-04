@@ -36,6 +36,22 @@
         </div>
       </div>
     </div>
+    <div class="login__footer">
+      <slot name="footer">
+        <div>
+          <slot name="copyright">
+            <div>
+              &copy;Copyright 2019 WANLYAN All rights reserved.
+            </div>
+          </slot>
+          <slot name="powered-by">
+            <div>
+              技术支持：上海熠世信息技术有限公司
+            </div>
+          </slot>
+        </div>
+      </slot>
+    </div>
   </div>
 </template>
 
@@ -57,11 +73,14 @@
     methods: {
       async doLogin() {
         this.withLoading(this.auth ? this.auth(this) : async () => {
-          let res = await axios.post('/api/login', {
+          let res = await this.api('/api/login', {
             username: this.login.username,
             password: this.login.password,
-          });
-          console.log(res);
+          })();
+          if (res) {
+            this.setGlobalData('user', res);
+            this.$router.push('/');
+          }
         });
       },
     },
@@ -72,7 +91,7 @@
   .login {
     background-color: #F0F3F7;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
@@ -81,24 +100,26 @@
       flex-direction: row;
       justify-content: center;
       align-items: center;
-      background: url('./login-bg.png') no-repeat center center;
+      background: url('login-bg.png') no-repeat center center;
       background-size: 951px 534px;
       width: 951px;
       height: 534px;
       box-sizing: border-box;
-      padding: 20px 172px 20px 139px;
+      padding: 40px 172px 50px 139px;
       text-align: center;
     }
     &__title {
       font-size: 26px;
       line-height: 42px;
       margin-bottom: 85px;
-      image {
+      vertical-align: middle;
+      img {
         display: inline-block;
         margin: 0 30px;
         height: 42px;
         width: auto;
         vertical-align: middle;
+        position: relative;
       }
     }
     &__form {
@@ -120,6 +141,13 @@
           width: 100%;
         }
       }
+    }
+    &__footer {
+      color: fadeout(#000, 55);
+      font-size: 14px;
+      line-height: 21px;
+      padding: 32px 0;
+      text-align: center;
     }
   }
 </style>

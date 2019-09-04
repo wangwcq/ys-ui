@@ -1,25 +1,17 @@
-/*
- * Features:
- * - Export all common dependencies
- * - Impl element-ui based UI components
- *
- * Todo:
- * - Add optional server support
- * - Add yarn script to run
- * */
 import Vue from 'vue';
 import Router from 'vue-router';
 import lodash from 'lodash';
 import axios from 'axios';
 import moment from 'moment-timezone';
 import numeral from 'numeral';
-import App from './src/components/App.vue';
-import mixinWithLoading from './src/mixins/withLoading';
-import mixinHandleRes from './src/mixins/handleRes';
-import mixinGlobalData from './src/mixins/globalData';
-import './src/uiComponents';
 
-import views from './src/views';
+import App from './components/App.vue';
+import mixinWithLoading from './mixins/withLoading';
+import mixinHandleRes from './mixins/handleRes';
+import mixinGlobalData from './mixins/globalData';
+import * as views from './views';
+
+import './uiComponents';
 
 Vue.config.productionTip = false;
 
@@ -27,6 +19,7 @@ Vue.use(Router);
 
 Vue.mixin(mixinWithLoading);
 Vue.mixin(mixinHandleRes);
+Vue.mixin(mixinGlobalData);
 
 const _ = lodash;
 
@@ -45,7 +38,14 @@ function main(params = {}) {
       path: '/',
       name: 'app',
       component: App,
-      children: routes,
+      children: [
+        ...routes,
+        {
+          path: '*',
+          name: 'Miss',
+          component: views.ErrorView,
+        },
+      ],
     }, ],
   });
 
