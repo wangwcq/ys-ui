@@ -4,7 +4,7 @@ export default {
   },
   computed: {
     pageTitle() {
-      return `${this.id ? '编辑' : '创建'}${this.moduleTitle}信息`;
+      return `${this.id ? '编辑' : '创建'}${this.moduleName}信息`;
     },
   },
   methods: {

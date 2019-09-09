@@ -20,10 +20,11 @@
           保存
         </ui-button>
         <router-link
+            v-if="withDelete && model.id"
             :to="`${moduleUrl}/delete/${model.id}`"
             class="ml"
         >
-          <ui-button v-if="false && model.id" type="info" icon="el-icon-delete">
+          <ui-button type="info" icon="el-icon-delete">
             删除
           </ui-button>
         </router-link>
@@ -42,6 +43,7 @@
       model: { type: Object, default: () => ({}) },
       fields: { type: Array, default: () => ([]) },
       moduleUrl: { type: String, default: '/' },
+      withDelete: { type: Boolean, default: false },
     },
   }
 </script>

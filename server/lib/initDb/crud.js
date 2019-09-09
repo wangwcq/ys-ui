@@ -143,19 +143,26 @@ ex.buildCrudUtils = (model, models) => {
     return item;
   };
   model.crud.saveItem = async function (data, id) {
-    const [item] = await model.findOrCreate({
-      where: { id: id || 0 },
-      defaults: { ..._.filter(_.omit(data, ['id']), Boolean) },
-    });
     const saveData = { ...data };
     _.forEach(model.crud.formAttributes, field => {
       if (field.model && !saveData[field.name]) {
         saveData[field.name] = null;
       }
     });
-    await item.update(data);
+
+    const [item] = await model.findOrCreate({
+      where: { id: id || 0 },
+      defaults: saveData,
+    });
+    await item.update(saveData);
     return item;
-  }
+  };
+  model.crud.deleteItem = async function(id) {
+    const item = await model.findOne({ where: { id } });
+    if (!item) return { code: 1, message: '指定的数据不存在' };
+    await item.destroy();
+    return { code: 0 };
+  };
 };
 
 module.exports = ex;

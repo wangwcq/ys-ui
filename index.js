@@ -57,6 +57,7 @@ function main(params = {}) {
 
 export {
   Vue,
+  _,
   lodash,
   axios,
   moment,
