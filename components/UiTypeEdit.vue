@@ -7,14 +7,16 @@
       />
     </template>
 
-    <template v-else-if="config.model">
-      <ui-select
-          filterable
-      ></ui-select>
-    </template>
-
     <template v-else-if="type === 'password'">
       <ui-input :value="value" type="password" @input="onInput" />
+    </template>
+
+    <template v-else-if="type === 'model'">
+      <ui-admin-model-picker
+          :value="value"
+          @input="onInput"
+          :config="config"
+      />
     </template>
 
     <template v-else>
@@ -28,10 +30,11 @@
   import numeral from 'numeral';
   import moment from 'moment';
   import UiTypeDisplay from "./UiTypeDisplay";
+  import UiAdminModelPicker from "./UiAdminModelPicker";
 
   export default {
     name: "UiTypeEdit",
-    components: {UiTypeDisplay},
+    components: {UiAdminModelPicker, UiTypeDisplay},
     props: {
       type: { type: String, default: 'string' },
       value: { default: undefined },

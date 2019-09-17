@@ -46,6 +46,7 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
     };
     const model = x[modelName];
     let paranoid = true;
+    let apiName = _.kebabCase(modelName);
     const attributes = {};
 
     _.forEach(fields, (field, fieldName) => {
@@ -53,6 +54,7 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
       if (_.startsWith(fieldName, '__')) return true;
       if (_.startsWith(fieldName, '_')) {
         if (fieldName === '_paranoid') paranoid = field;
+        if (fieldName === '_apiName') apiName = field;
         return true;
       }
       attributes[fieldName] = utils.getFieldType(field.type);
@@ -67,9 +69,12 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
     fields._titleFields = _.map(_.filter(fields, field => field.isTitle), field => field.name);
     if (!fields._titleFields.length) {
       if (fields.title) fields._titleFields = ['title'];
-      if (fields.displayName) fields._titleFields = ['displayName'];
-      if (fields.name) fields._titleFields = ['name'];
+      else if (fields.displayName) fields._titleFields = ['displayName'];
+      else if (fields.name) fields._titleFields = ['name'];
     }
+    fields._appData = {
+      apiName,
+    };
     model.fieldsDefinition = fields;
 
     models[modelName] = model;

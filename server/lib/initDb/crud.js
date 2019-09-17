@@ -76,7 +76,11 @@ const getFormAttributes = (vFields) => {
       fieldName = fieldName.replace('__', '');
     }
     if (_.startsWith(fieldName, '_')) return null;
-    const type = utils.getFormFieldType(field.type);
+    let type = utils.getFormFieldType(field.type);
+    if (field.model) {
+      type = 'model';
+    }
+    if (field.readonly) { type = `readonly__${type}`; }
     const title = field.title || _.upperFirst(_.startCase(fieldName));
 
     return {

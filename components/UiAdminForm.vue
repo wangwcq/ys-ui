@@ -1,16 +1,23 @@
 <template>
   <div>
     <ui-form :model="model" label-width="150px">
-      <ui-form-item
-          v-for="field in fields"
-          :key="field.name"
-          :label="`${field.title}：`"
-      >
-        <ui-type-edit
-            :type="field.type"
-            v-model="model[field.name]"
-        />
-      </ui-form-item>
+      <ui-flex row wrap>
+        <ui-flex
+            :style="`flex: 1 0 ${1 / cols * 100}%;`"
+            v-for="field in fields"
+            :key="field.name"
+        >
+          <ui-form-item
+              :label="`${field.title}：`"
+          >
+            <ui-type-edit
+                :type="field.type"
+                v-model="model[field.name]"
+                :config="field"
+            />
+          </ui-form-item>
+        </ui-flex>
+      </ui-flex>
 
       <div class="ui-admin-form__submit">
         <ui-button
@@ -44,6 +51,7 @@
       fields: { type: Array, default: () => ([]) },
       moduleUrl: { type: String, default: '/' },
       withDelete: { type: Boolean, default: false },
+      cols: { type: Number, default: 1 },
     },
   }
 </script>

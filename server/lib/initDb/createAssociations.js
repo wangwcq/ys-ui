@@ -34,6 +34,7 @@ ex.parseAssiociation = (str, models) => {
         key,
         titleFields: model.fieldsDefinition._titleFields,
         type: utils.getListFieldType(model.fieldsDefinition.type),
+        appData: model.fieldsDefinition._appData,
       };
     };
 
@@ -68,6 +69,7 @@ ex.parseAssiociation = (str, models) => {
       alias,
       titleFields: model.fieldsDefinition._titleFields,
       type: utils.getListFieldType(model.fieldsDefinition.type || 'tag'),
+      appData: model.fieldsDefinition._appData,
     };
   };
 

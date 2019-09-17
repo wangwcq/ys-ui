@@ -7,6 +7,7 @@
           'ui-flex--row-reverse': rowReverse,
           'ui-flex--col': column || col,
           'ui-flex--col-reverse': columnReverse || colReverse,
+          'ui-flex--wrap': wrap,
           'ui-flex--justify-start': justifyStart || jStart,
           'ui-flex--justify-end': justifyEnd || jEnd,
           'ui-flex--justify-around': around,
@@ -17,6 +18,7 @@
           'ui-flex--align-start': alignStart || aStart,
           'ui-flex--align-end': alignEnd || aEnd,
           'ui-flex--align-center': alignCenter || aCenter || center,
+          'ui-flex--zero': zero,
         },
       ]"
   >
@@ -34,6 +36,7 @@
       col: { type: Boolean, default: false },
       columnReverse: { type: Boolean, default: false },
       colReverse: { type: Boolean, default: false },
+      wrap: { type: Boolean, default: false },
       justifyStart: { type: Boolean, default: false },
       jStart: { type: Boolean, default: false },
       justifyEnd: { type: Boolean, default: false },
@@ -52,6 +55,7 @@
       alignCenter: { type: Boolean, default: false },
       aCenter: { type: Boolean, default: false },
       center: { type: Boolean, default: false },
+      zero: { type: Boolean, default: false },
     },
   }
 </script>
@@ -64,6 +68,8 @@
     &--col { display: flex; flex-direction: column; flex: 0 1 auto; }
     &--col-reverse { display: flex; flex-direction: column-reverse; flex: 0 1 auto; }
 
+    &--wrap { display: flex; flex-wrap: wrap; flex: 0 1 auto; }
+
     &--justify-start { flex: 0 1 auto; justify-content: flex-start; }
     &--justify-end { flex: 0 1 auto; justify-content: flex-end; }
     &--justify-around { flex: 0 1 auto; justify-content: space-around; }
@@ -75,5 +81,7 @@
     &--align-start { flex: 0 1 auto; align-items: flex-start; }
     &--align-end { flex: 0 1 auto; align-items: flex-end; }
     &--align-center { flex: 0 1 auto; align-items: center; }
+
+    &--zero { flex: 0 1 auto; }
   }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="ui-admin-table__toolbar">
-      <router-link :to="`${moduleUrl}/add`">
+      <router-link v-if="withCreate" :to="`${moduleUrl}/add`">
         <ui-button size="small" type="primary" icon="el-icon-edit">创建</ui-button>
       </router-link>
     </div>
@@ -62,18 +62,24 @@
       moduleUrl: { type: String, default: '/home' },
       attributes: { type: Array, default: () => [] },
       data: { type: Array, default: () => [] },
+      withCreate: { type: Boolean, default: true },
+      withActions: { type: Boolean, default: true },
     },
     computed: {
       columns() {
-        return [
+        const cols = [
           ...this.attributes,
-          {
-            name: '_adminActions',
-            title: '操作',
-            width: 180,
-            align: 'center',
-          },
         ];
+        if (this.withActions) {
+          cols.push({
+              name: '_adminActions',
+              title: '操作',
+              width: 180,
+              align: 'center',
+            },
+          );
+        }
+        return cols;
       },
     },
   }
