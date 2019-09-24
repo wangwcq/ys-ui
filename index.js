@@ -6,27 +6,25 @@ import moment from 'moment-timezone';
 import numeral from 'numeral';
 
 import App from './components/App.vue';
-import mixinWithLoading from './mixins/withLoading';
-import mixinHandleRes from './mixins/handleRes';
-import mixinGlobalData from './mixins/globalData';
 import * as views from './views';
 
-import './uiComponents';
+import initUiComponents from './uiComponents';
+import initUiMixins from './uiMixins.js';
 
 Vue.config.productionTip = false;
 
 Vue.use(Router);
 
-Vue.mixin(mixinWithLoading);
-Vue.mixin(mixinHandleRes);
-Vue.mixin(mixinGlobalData);
-
 const _ = lodash;
 
-window._ = _;
-window.axios = axios;
-
 function main(params = {}) {
+
+  window._ = _;
+  window.axios = axios;
+
+  initUiComponents();
+  initUiMixins();
+
   const {
     routes = []
   } = params;

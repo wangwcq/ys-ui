@@ -19,6 +19,7 @@
           'ui-flex--align-end': alignEnd || aEnd,
           'ui-flex--align-center': alignCenter || aCenter || center,
           'ui-flex--zero': zero,
+          'ui-flex--one': one,
         },
       ]"
   >
@@ -56,6 +57,7 @@
       aCenter: { type: Boolean, default: false },
       center: { type: Boolean, default: false },
       zero: { type: Boolean, default: false },
+      one: { type: Boolean, default: false },
     },
   }
 </script>
@@ -83,5 +85,6 @@
     &--align-center { flex: 0 1 auto; align-items: center; }
 
     &--zero { flex: 0 1 auto; }
+    &--one { flex: 1 0 0; }
   }
 </style>

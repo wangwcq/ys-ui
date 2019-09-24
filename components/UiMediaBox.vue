@@ -1,15 +1,21 @@
 <template>
   <div class="media-box">
-    <div class="media-box__media" v-if="!noMedia">
-      <slot name="media" />
-    </div>
+    <slot name="media-box">
+      <div class="media-box__media" v-if="!noMedia">
+        <slot name="media" />
+      </div>
+    </slot>
     <div class="media-box__body">
-      <div class="media-box__title">
-        <slot name="title"></slot>
-      </div>
-      <div class="media-box__content">
-        <slot />
-      </div>
+      <slot name="media-title">
+        <div class="media-box__title">
+          <slot name="title"></slot>
+        </div>
+      </slot>
+      <slot name="media-content">
+        <div class="media-box__content">
+          <slot />
+        </div>
+      </slot>
     </div>
   </div>
 </template>

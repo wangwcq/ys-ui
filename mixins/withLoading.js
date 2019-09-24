@@ -10,6 +10,7 @@ export default {
       try {
         res = await asyncFunc();
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.error('WithLoading Error: ', e);
         this.$message({
           type: 'error',
