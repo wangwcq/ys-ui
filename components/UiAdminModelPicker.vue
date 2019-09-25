@@ -1,7 +1,7 @@
 <template>
   <div>
     <ui-flex row>
-      <ui-flex zero>
+      <ui-flex zero v-if="!disabled">
         <ui-button
             icon="el-icon-search"
             @click="dialogTableVisible = true"
@@ -14,6 +14,7 @@
             filterable
             clearable
             class="ui-admin-model-picker__select"
+            :disabled="disabled"
         >
           <el-option
               v-for="item in options"
@@ -23,7 +24,6 @@
             <span style="float: left">{{ item.label }}</span>
             <span style="float: right; color: #aaa; font-size: 13px">#{{ item.value }}</span>
           </el-option>
-          <template slot="append">.com</template>
         </ui-select>
       </ui-flex>
     </ui-flex>
@@ -59,6 +59,7 @@
     props: {
       value: {},
       config: { type: Object, default: () => ({}) },
+      disabled: { type: Boolean, default: false },
     },
     emits: ['input'],
     data() {
