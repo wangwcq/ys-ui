@@ -1,4 +1,12 @@
 export default {
+  data() {
+    return {
+      attributes: [],
+      data: null,
+      customAttributes: [],
+      extendedData: {},
+    };
+  },
   mounted() {
     this.fetchData();
   },
@@ -10,9 +18,16 @@ export default {
   methods: {
     async fetchData() {
       const { id } = this;
-      const { attributes, item } = await this.withLoading(this.api(`/api/${this.model}/edit/${id || ''}`));
+      const {
+        attributes = [],
+        item = {},
+        customAttributes = [],
+        extendedData = {},
+      } = await this.withLoading(this.api(`/api/${this.model}/edit/${id || ''}`));
       this.attributes = attributes;
       this.data = item;
+      this.customAttributes = customAttributes;
+      this.extendedData = extendedData;
     },
     async handleSubmit() {
       const { id } = this;
