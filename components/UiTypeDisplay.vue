@@ -16,6 +16,14 @@
       ******
     </small>
 
+    <template v-else-if="type === 'model'">
+      <ui-admin-model-picker
+          :value="body"
+          :config="config"
+          disabled
+      />
+    </template>
+
     <template v-else>
       {{body || '-'}}
     </template>
@@ -26,15 +34,18 @@
   import _ from 'lodash';
   import numeral from 'numeral';
   import moment from 'moment';
+  import UiAdminModelPicker from "./UiAdminModelPicker";
 
   export default {
     name: "UiTypeDisplay",
+    components: {UiAdminModelPicker},
     props: {
       type: { type: String, default: 'string' },
       collection: { type: [Array, Object], default: () => ({}) },
       path: { type: [String, Array], default: '' },
       data: { default: undefined },
       tag: { type: String, default: 'span' },
+      config: { type: Object, default: () => ({}) },
     },
     computed: {
       body() {

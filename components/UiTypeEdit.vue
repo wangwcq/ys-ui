@@ -4,6 +4,7 @@
       <ui-type-display
           :type="getReadonlyType(type)"
           :data="value"
+          :config="config"
       />
     </template>
 
