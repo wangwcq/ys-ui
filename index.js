@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import lodash from 'lodash';
+import lodash from 'async-dash';
 import axios from 'axios';
 import moment from 'moment-timezone';
 import numeral from 'numeral';

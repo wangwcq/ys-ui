@@ -1,4 +1,4 @@
-const lodash = require('lodash');
+const lodash = require('async-dash');
 const Koa = require('koa');
 const serve = require('koa-static');
 const KoaBody = require('koa-body');
