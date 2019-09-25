@@ -13,6 +13,7 @@
             <ui-type-edit
                 :type="field.type"
                 v-model="model[field.name]"
+                @input="handleFieldChange"
                 :config="field"
             />
           </ui-form-item>
@@ -23,7 +24,9 @@
         <ui-button
             type="primary"
             icon="el-icon-edit"
-            @click="$emit('submit')">
+            @click="$emit('submit')"
+            v-if="isDirty"
+        >
           保存
         </ui-button>
         <router-link
@@ -52,6 +55,16 @@
       moduleUrl: { type: String, default: '/' },
       withDelete: { type: Boolean, default: false },
       cols: { type: Number, default: 1 },
+    },
+    data() {
+      return {
+        isDirty: false,
+      };
+    },
+    methods: {
+      handleFieldChange() {
+        this.isDirty = true;
+      },
     },
   }
 </script>
