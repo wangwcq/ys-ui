@@ -8,7 +8,10 @@ const Router = require('koa-router');
 
 const KoaApp = require('./lib/koa-app');
 const Logger = require('./lib/logger');
+const consts = require('./lib/consts');
+
 const initDb = require('./lib/initDb/index');
+const ensureSeedData = require('./lib/ensureSeedData/index');
 
 const main = async (config = {}) => {
   const {
