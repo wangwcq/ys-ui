@@ -39,8 +39,11 @@ module.exports = {
   main,
   Logger,
   requireDir,
-  initDb,
   lodash,
   _: lodash,
   Router,
+  consts,
+
+  initDb,
+  ensureSeedData,
 };
