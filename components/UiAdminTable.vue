@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="ui-admin-table__toolbar">
-      <router-link v-if="withCreate" :to="`${moduleUrl}/add`">
+      <router-link v-if="withCreate && positionCreate === 'toolbar'" :to="`${moduleUrl}/add`">
         <ui-button size="small" type="primary" icon="el-icon-edit">创建</ui-button>
       </router-link>
     </div>
@@ -50,6 +50,11 @@
         </template>
       </ui-table-column>
     </ui-table>
+    <div class="ui-admin-table__end">
+      <router-link v-if="withCreate && positionCreate === 'end'" :to="`${moduleUrl}/add`">
+        <ui-button style="width: 100%" size="small" type="primary" plain round icon="el-icon-edit">创建</ui-button>
+      </router-link>
+    </div>
   </div>
 </template>
 
@@ -64,6 +69,7 @@
       data: { type: Array, default: () => [] },
       withCreate: { type: Boolean, default: true },
       withActions: { type: Boolean, default: true },
+      positionCreate: { type: String, default: 'toolbar' }, // toolbar, end
     },
     computed: {
       columns() {
@@ -89,6 +95,9 @@
 .ui-admin-table {
   &__toolbar {
     margin-bottom: 15px;
+  }
+  &__end {
+    margin-top: 15px;
   }
 }
 </style>

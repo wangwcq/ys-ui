@@ -17,6 +17,7 @@ export default {
       data: null,
       customFields: null,
       customFieldsData: null,
+      subLists: {},
     };
   },
   mounted() {
@@ -61,6 +62,27 @@ export default {
       if (fields && data) {
         this[vCustomFieldsKey] = fields;
         this[vCustomFieldsDataKey] = data;
+      }
+    },
+    async fetchSubList(subListName = '', subListModel = {}) {
+      try {
+        if (!subListName) throw new Error('无法获取子订单');
+        const res = await this.withLoading(this.api(`/api/${this.model}/sub-list/${subListName}/${this.id}`));
+        if (!res) {
+          this.$message({
+            type: 'error',
+            message: '无法加载列表',
+          });
+          return;
+        }
+        const { attributes, list } = res;
+        this.$set(subListModel, 'attributes', attributes);
+        this.$set(subListModel, 'list', list);
+      } catch(e) {
+        this.$message({
+          type: 'error',
+          message: e.message,
+        });
       }
     },
   },
