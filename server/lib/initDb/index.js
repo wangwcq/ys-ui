@@ -30,7 +30,7 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
       host,
       port,
       dialect: 'mysql',
-      timezone: 'Asia/Shanghai',
+      // timezone: 'Asia/Shanghai', // todo fixme
       define: {
         hooks: {
           beforeValidate: () => db.query('SET autocommit = 1'),
@@ -92,7 +92,7 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
   db.Op = Op;
 
   return {
-    db, 
+    db,
     models,
   };
 };

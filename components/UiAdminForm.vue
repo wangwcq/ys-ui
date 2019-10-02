@@ -24,7 +24,7 @@
         <ui-button
             type="primary"
             icon="el-icon-edit"
-            @click="$emit('submit')"
+            @click="() => { $emit('submit'); isDirty = false; }"
             v-if="isDirty"
         >
           保存

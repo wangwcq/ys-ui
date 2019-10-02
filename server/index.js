@@ -12,6 +12,7 @@ const consts = require('./lib/consts');
 
 const initDb = require('./lib/initDb/index');
 const ensureSeedData = require('./lib/ensureSeedData/index');
+const useCustomFields = require('./lib/useCustomFields/index');
 
 const main = async (config = {}) => {
   const {
@@ -46,4 +47,6 @@ module.exports = {
 
   initDb,
   ensureSeedData,
+  
+  useCustomFields,
 };
