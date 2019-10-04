@@ -1,4 +1,16 @@
 export default {
+  props: {
+    moduleName: { type: String, default: '模块' },
+    moduleUrl: { type: String, default: '/' },
+    model: { type: String, default: 'data' },
+    pageTitle: { type: String, default: '欢迎' },
+  },
+  data() {
+    return {
+      data: null,
+      attributes: null,
+    };
+  },
   mounted() {
     this.fetchData();
   },

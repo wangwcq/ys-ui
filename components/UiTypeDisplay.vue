@@ -1,6 +1,14 @@
 <template>
   <component :is="tag">
-    <template v-if="type === 'number'">
+    <template v-if="config.model">
+      <ui-admin-model-picker
+          :value="body"
+          :config="config"
+          disabled
+      />
+    </template>
+
+    <template v-else-if="type === 'number'">
       {{formatNumber(body)}}
     </template>
 
@@ -15,14 +23,6 @@
     <small v-else-if="type === 'password'">
       ******
     </small>
-
-    <template v-else-if="type === 'model'">
-      <ui-admin-model-picker
-          :value="body"
-          :config="config"
-          disabled
-      />
-    </template>
 
     <template v-else>
       {{body || '-'}}

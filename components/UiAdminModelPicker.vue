@@ -8,13 +8,18 @@
         />
       </ui-flex>
       <ui-flex>
+        <template
+            v-if="disabled"
+        >
+          {{ displayValue || '...' }}
+        </template>
         <ui-select
+            v-else
             :value="value"
             @input="onInput"
             filterable
             clearable
             class="ui-admin-model-picker__select"
-            :disabled="disabled"
         >
           <el-option
               v-for="item in options"
@@ -68,6 +73,7 @@
         dialogTableVisible: false,
         tableData: [],
         tableAttributes: [],
+        displayValue: '',
       };
     },
     mounted() {
@@ -94,6 +100,8 @@
           };
         });
         this.options = list;
+        const selectedOption = _.find(list, item => item.value === this.value);
+        this.displayValue = _.get(selectedOption, 'label', '-');
         this.tableAttributes = [
           {
             name: '_select',

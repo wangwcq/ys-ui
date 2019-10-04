@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 let globalData = {};
+
 if (typeof window !== 'undefined') {
   if (window.G) { globalData = window.G; }
   else { window.G = globalData; }

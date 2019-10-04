@@ -4,6 +4,7 @@ import lodash from 'async-dash';
 import axios from 'axios';
 import moment from 'moment-timezone';
 import numeral from 'numeral';
+import globalData from './mixins/globalData';
 
 import App from './components/App.vue';
 import * as views from './views';
@@ -34,7 +35,6 @@ function main(params = {}) {
     base: process.env.BASE_URL,
     routes: [{
       path: '/',
-      name: 'app',
       component: App,
       children: [
         ...routes,
@@ -53,6 +53,8 @@ function main(params = {}) {
   }).$mount('#app');
 }
 
+const G = globalData.methods.G;
+
 export {
   Vue,
   _,
@@ -62,4 +64,5 @@ export {
   numeral,
   main,
   views,
+  G,
 };

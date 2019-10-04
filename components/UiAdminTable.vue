@@ -7,7 +7,23 @@
     </div>
     <ui-table
         :data="data"
+        :default-expand-all="defaultExpandAll"
     >
+      <ui-table-column v-if="expandable" type="expand">
+        <template slot-scope="scope">
+          <slot
+              name="column__expand"
+              v-bind="scope"
+          >
+            <ui-admin-form
+                :fields="columns"
+                :model="scope.row"
+                readonly
+                :cols="2"
+            />
+          </slot>
+        </template>
+      </ui-table-column>
       <ui-table-column
           v-for="col in columns"
           :key="col.name"
@@ -70,6 +86,8 @@
       withCreate: { type: Boolean, default: true },
       withActions: { type: Boolean, default: true },
       positionCreate: { type: String, default: 'toolbar' }, // toolbar, end
+      expandable: { type: Boolean, default: false },
+      defaultExpandAll: { type: Boolean, default: false },
     },
     computed: {
       columns() {

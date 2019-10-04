@@ -15,6 +15,7 @@
                 v-model="model[field.name]"
                 @input="handleFieldChange"
                 :config="field"
+                :readonly="readonly"
             />
           </ui-form-item>
         </ui-flex>
@@ -55,6 +56,7 @@
       moduleUrl: { type: String, default: '/' },
       withDelete: { type: Boolean, default: false },
       cols: { type: Number, default: 1 },
+      readonly: { type: Boolean, default: false },
     },
     data() {
       return {

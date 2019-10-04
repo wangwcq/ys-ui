@@ -123,6 +123,9 @@ ex.buildCrudUtils = (model, models) => {
   model.crud.newItem = fields._newItem || (() => createNewItemByFields(model.crud.formAttributes));
   model.crud.listAll = async function () {
     const res = await model.findAll({
+      order: [
+        ['id', 'desc'],
+      ],
       include: _.map(_.filter(model.crud.listAttributes, attribute => attribute.model), (field) => {
         const { model: association } = field;
         return {

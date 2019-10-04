@@ -1,18 +1,13 @@
 export default {
+  props: {
+    moduleName: { type: String, default: '模块' },
+    moduleUrl: { type: String, default: '/' },
+    model: { type: String, default: 'data' },
+    pageTitle: { type: String, default: '欢迎' },
+    id: { type: [Number, String], default: '' },
+  },
   data() {
-    const {
-      moduleName,
-      model,
-      moduleUrl,
-    } = this.$route.meta;
-    const {
-      id,
-    } = this.$route.params;
     return {
-      model,
-      moduleName,
-      moduleUrl,
-      id,
       attributes: [],
       data: null,
       customFields: null,
@@ -23,11 +18,6 @@ export default {
   mounted() {
     this.fetchData();
     this.fetchCustomFields();
-  },
-  computed: {
-    pageTitle() {
-      return `${this.id ? '编辑' : '创建'}${this.moduleName}信息`;
-    },
   },
   methods: {
     async fetchData() {

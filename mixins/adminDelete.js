@@ -1,11 +1,20 @@
 export default {
+  props: {
+    moduleName: { type: String, default: '模块' },
+    moduleUrl: { type: String, default: '/' },
+    model: { type: String, default: 'data' },
+    pageTitle: { type: String, default: '欢迎' },
+    id: { type: [Number, String], default: '' },
+  },
+  data() {
+    return {
+      apiMessage: '',
+    };
+  },
   mounted() {
     this.fetchData();
   },
   computed: {
-    pageTitle() {
-      return `删除${this.moduleName}`;
-    },
     message() {
       return this.apiMessage || `是否确认删除${this.moduleName}？`;
     },

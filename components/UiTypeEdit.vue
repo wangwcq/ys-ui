@@ -41,6 +41,7 @@
       value: { default: undefined },
       tag: { type: String, default: 'div' },
       config: { type: Object, default: () => ({}) },
+      readonly: { type: Boolean, default: false },
     },
     emits: ['input'],
     computed: {
@@ -68,7 +69,7 @@
         this.$emit('input', ev);
       },
       getReadonlyType(type) {
-        if (_.startsWith(type, 'readonly__')) {
+        if (this.readonly || _.startsWith(type, 'readonly__')) {
           return type.replace('readonly__', '');
         }
         return null;
