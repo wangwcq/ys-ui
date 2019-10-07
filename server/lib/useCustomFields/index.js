@@ -54,7 +54,7 @@ module.exports = function(options = {}) {
 
     let data = await CustomFieldsData.findOne({
       where: {
-        key,
+        // key,
         model: modelName,
         modelId: id,
       },
@@ -75,6 +75,11 @@ module.exports = function(options = {}) {
 
     const [item] = await CustomFieldsData.findOrCreate({
       where: {
+        // key,
+        model: modelName,
+        modelId: id,
+      },
+      defaults: {
         key,
         model: modelName,
         modelId: id,
@@ -82,6 +87,7 @@ module.exports = function(options = {}) {
     });
 
     await item.update({
+      key,
       data: JSON.stringify({
         ...body || {},
       }),

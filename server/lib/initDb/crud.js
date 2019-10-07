@@ -24,16 +24,22 @@ const dbCommonFields = [
 ];
 
 const getListAttributes = (vFields) => {
+  let hideId = false;
   let fields = _.map(vFields, (field, fieldName) => {
     if (_.startsWith(fieldName, '__')) {
       fieldName = fieldName.replace('__', '');
     }
-    if (_.startsWith(fieldName, '_')) return null;
+    else if (_.startsWith(fieldName, '_')) return null;
     const type = utils.getListFieldType(field.type);
     if (type === 'password') return null;
     const title = field.title || _.upperFirst(_.startCase(fieldName));
 
-    let { width, minWidth, align } = field;
+    let { width, minWidth, align, inList = true } = field;
+
+    if (!inList) {
+      if (fieldName === 'id') hideId = true;
+      return null;
+    }
 
     if (!width) {
       if (type === 'datetime') width = COLUMN_WIDTH_DATETIME;
@@ -57,13 +63,13 @@ const getListAttributes = (vFields) => {
     };
   }).filter(Boolean);
   fields = [
-    {
+    ...hideId ? [] : [{
       name: 'id',
       title: 'ID',
       type: 'id',
       align: 'center',
       width: 80,
-    },
+    }],
     ...fields,
     ...dbCommonFields,
   ];
@@ -71,13 +77,17 @@ const getListAttributes = (vFields) => {
 };
 
 const getFormAttributes = (vFields) => {
+  let isIdPreDefined = false;
   let fields = _.map(vFields, (field, fieldName) => {
     if (_.startsWith(fieldName, '__')) {
       fieldName = fieldName.replace('__', '');
     }
     if (_.startsWith(fieldName, '_')) return null;
+    if (fieldName === 'id') {
+      isIdPreDefined = true;
+    }
     let type = utils.getFormFieldType(field.type);
-    if (field.model) {
+    if (field.model && type !== 'hidden') {
       type = 'model';
     }
     if (field.readonly) { type = `readonly__${type}`; }
@@ -91,13 +101,13 @@ const getFormAttributes = (vFields) => {
     };
   }).filter(Boolean);
   fields = [
-    {
+    ...isIdPreDefined ? [] : [{
       name: 'id',
       title: 'ID',
       type: 'readonly__id',
       align: 'center',
       width: 80,
-    },
+    }],
     ...fields,
     ..._.merge([], dbCommonFields, [
       { type: 'readonly__datetime' },
@@ -121,7 +131,9 @@ ex.buildCrudUtils = (model, models) => {
   model.crud.listAttributes = getListAttributes(fields);
   model.crud.formAttributes = getFormAttributes(fields);
   model.crud.newItem = fields._newItem || (() => createNewItemByFields(model.crud.formAttributes));
-  model.crud.listAll = async function () {
+  model.crud.listAll = async function (options = {}) {
+    const { where = {} } = options;
+
     const res = await model.findAll({
       order: [
         ['id', 'desc'],
@@ -157,8 +169,12 @@ ex.buildCrudUtils = (model, models) => {
       }
     });
 
+    const where = {};
+    _.forEach(model.primaryKeyAttributes, field => {
+      where[field] = _.get(data, field, null);
+    });
     const [item] = await model.findOrCreate({
-      where: { id: id || 0 },
+      where,
       defaults: saveData,
     });
     await item.update(saveData);

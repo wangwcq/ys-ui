@@ -1,11 +1,19 @@
-export default {
+import _ from 'lodash';
+
+const mixin = {
   props: {
-    moduleName: { type: String, default: '模块' },
     moduleUrl: { type: String, default: '/' },
     model: { type: String, default: 'data' },
-    pageTitle: { type: String, default: '欢迎' },
     id: { type: [Number, String], default: '' },
+    dataDefault: { type: Object, default: () => ({}) },
+    afterSubmit: {
+      type: Function,
+      default: function() {
+        this.$router.push(`${this.moduleUrl}/`);
+      },
+    },
   },
+  emits: ['after-submit'],
   data() {
     return {
       attributes: [],
@@ -28,15 +36,24 @@ export default {
       } = await this.withLoading(this.api(`/api/${this.model}/edit/${id || ''}`));
       this.attributes = attributes;
       this.data = item;
+      if (!id) {
+        this.data = {
+          ...this.data,
+          ...this.dataDefault,
+        };
+      }
     },
     async handleSubmit() {
       const { id } = this;
-      await this.withLoading(this.api(`/api/${this.model}/save/${id || ''}`, this.data));
-      this.$message({
-        type: 'success',
-        message: '保存成功',
-      });
-      this.$router.push(`${this.moduleUrl}/`);
+      const saveRes = await this.withLoading(this.api(`/api/${this.model}/save/${id || ''}`, this.data));
+      if (saveRes !== null) {
+        this.$message({
+          type: 'success',
+          message: '保存成功',
+        });
+        this.afterSubmit();
+        this.$emit('after-submit');
+      }
     },
     async fetchCustomFields(options = {}) {
       const {
@@ -48,32 +65,25 @@ export default {
         id,
       } = this;
       if (!id || !customFieldsKey) return;
-      const { fields, data } = await this.withLoading(this.api(`/api/${this.model}/custom-fields/${customFieldsKey}/${id}`));
+      const res = await this.withLoading(this.api(`/api/${this.model}/custom-fields/${customFieldsKey}/${id}`));
+      const { fields, data } = res || {};
       if (fields && data) {
         this[vCustomFieldsKey] = fields;
         this[vCustomFieldsDataKey] = data;
       }
     },
-    async fetchSubList(subListName = '', subListModel = {}) {
-      try {
-        if (!subListName) throw new Error('无法获取子订单');
-        const res = await this.withLoading(this.api(`/api/${this.model}/sub-list/${subListName}/${this.id}`));
-        if (!res) {
-          this.$message({
-            type: 'error',
-            message: '无法加载列表',
-          });
-          return;
-        }
-        const { attributes, list } = res;
-        this.$set(subListModel, 'attributes', attributes);
-        this.$set(subListModel, 'list', list);
-      } catch(e) {
-        this.$message({
-          type: 'error',
-          message: e.message,
-        });
-      }
-    },
   },
 };
+
+/**
+ * util createWith
+ * @param options
+ * @param {Object} options.component
+ * @param {string} options.moduleUrl
+ * @param {string} options.model
+ * @param {string} options.buttonText
+ * @param {Object} options.dataDefault
+ */
+mixin.createWith = (options = {}) => options;
+
+export default mixin;

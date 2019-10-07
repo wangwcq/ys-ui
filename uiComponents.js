@@ -11,6 +11,7 @@ import UiPlaceholder from './components/UiPlaceholder';
 import UiStage from './components/UiStage';
 import UiAdminTable from "./components/UiAdminTable";
 import UiAdminForm from './components/UiAdminForm';
+import UiSubList from './components/UiSubList';
 
 import './utils.less';
 
@@ -31,4 +32,5 @@ export default (iVue) => {
   Vue.component('ui-flex', UiFlex);
   Vue.component('ui-admin-table', UiAdminTable);
   Vue.component('ui-admin-form', UiAdminForm);
+  Vue.component('ui-sub-list', UiSubList);
 };

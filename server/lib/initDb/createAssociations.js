@@ -18,7 +18,7 @@ ex.parseAssiociation = (str, models) => {
 
     const parseModelAliasKey = (exp) => {
       let [expModel, key] = exp.split('.');
-      let [modelName, alias] = exp.split('|');
+      let [modelName, alias] = expModel.split('|');
       if (!alias) {
         alias = _.camelCase(`x_${modelName}s`);
       }

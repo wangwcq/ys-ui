@@ -1,9 +1,16 @@
 <template>
   <div>
     <div class="ui-admin-table__toolbar">
-      <router-link v-if="withCreate && positionCreate === 'toolbar'" :to="`${moduleUrl}/add`">
+      <component
+          :is="vLinkCreate ? 'router-link' : 'a'"
+          v-if="withCreate && positionCreate === 'toolbar'"
+          :to="vLinkCreate"
+          :target="createTarget"
+          @click="handleCreate || (() => {})"
+      >
         <ui-button size="small" type="primary" icon="el-icon-edit">创建</ui-button>
-      </router-link>
+      </component>
+      <ui-button v-if="withRefresh && positionCreate === 'toolbar'" size="small" icon="el-icon-refresh" @click="() => $emit('refresh')" class="ml">刷新</ui-button>
     </div>
     <ui-table
         :data="data"
@@ -67,9 +74,23 @@
       </ui-table-column>
     </ui-table>
     <div class="ui-admin-table__end">
-      <router-link v-if="withCreate && positionCreate === 'end'" :to="`${moduleUrl}/add`">
-        <ui-button style="width: 100%" size="small" type="primary" plain round icon="el-icon-edit">创建</ui-button>
-      </router-link>
+      <slot name="table-end"></slot>
+      <ui-flex row>
+        <ui-flex>
+          <component
+              :is="vLinkCreate ? 'router-link' : 'a'"
+              v-if="withCreate && positionCreate === 'end'"
+              :to="vLinkCreate"
+              @click="() => handleCreate ? handleCreate() : null"
+              :target="createTarget"
+          >
+            <ui-button style="width: 100%" size="small" type="primary" plain round icon="el-icon-edit">创建</ui-button>
+          </component>
+        </ui-flex>
+        <ui-flex v-if="withRefresh && positionCreate === 'end'" class="ml">
+          <ui-button size="small" icon="el-icon-refresh" @click="() => $emit('refresh')">刷新</ui-button>
+        </ui-flex>
+      </ui-flex>
     </div>
   </div>
 </template>
@@ -84,11 +105,16 @@
       attributes: { type: Array, default: () => [] },
       data: { type: Array, default: () => [] },
       withCreate: { type: Boolean, default: true },
+      createTarget: { type: String, default: '' },
       withActions: { type: Boolean, default: true },
+      withRefresh: { type: Boolean, default: false },
       positionCreate: { type: String, default: 'toolbar' }, // toolbar, end
       expandable: { type: Boolean, default: false },
       defaultExpandAll: { type: Boolean, default: false },
+      linkCreate: { type: String, default: undefined },
+      handleCreate: { type: Function, default: null },
     },
+    emits: ['refresh'],
     computed: {
       columns() {
         const cols = [
@@ -104,6 +130,15 @@
           );
         }
         return cols;
+      },
+      vLinkCreate() {
+        if (_.isFunction(this.handleCreate)) {
+          return null;
+        }
+        if (!_.isUndefined(this.linkCreate)) {
+          return this.linkCreate;
+        }
+        return `${this.moduleUrl}/add`;
       },
     },
   }

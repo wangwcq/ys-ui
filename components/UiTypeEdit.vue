@@ -12,6 +12,15 @@
       <ui-input :value="value" type="password" @input="onInput" />
     </template>
 
+    <template v-else-if="type === 'date'">
+      <ui-date-picker
+          v-model="value"
+          type="date"
+          placeholder="请选择日期"
+          @input="onInput"
+      />
+    </template>
+
     <template v-else-if="type === 'model'">
       <ui-admin-model-picker
           :value="value"
@@ -21,7 +30,7 @@
     </template>
 
     <template v-else>
-      <ui-input :value="value" @input="onInput" />
+      <ui-input :value="value" @input="onInput" autocomplete="off" />
     </template>
   </component>
 </template>

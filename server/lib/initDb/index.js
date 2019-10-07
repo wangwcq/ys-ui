@@ -30,7 +30,7 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
       host,
       port,
       dialect: 'mysql',
-      // timezone: 'Asia/Shanghai', // todo fixme
+      timezone: 'Asia/Shanghai', // todo fixme
       define: {
         hooks: {
           beforeValidate: () => db.query('SET autocommit = 1'),
@@ -51,10 +51,10 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
 
     _.forEach(fields, (field, fieldName) => {
       field.name = fieldName;
-      if (_.startsWith(fieldName, '__')) return true;
+      if (_.startsWith(fieldName, '__' && fieldName !== '__id')) return true;
       if (_.startsWith(fieldName, '_')) {
         if (fieldName === '_paranoid') paranoid = field;
-        if (fieldName === '_apiName') apiName = field;
+        else if (fieldName === '_apiName') apiName = field;
         return true;
       }
       attributes[fieldName] = utils.getFieldType(field.type);

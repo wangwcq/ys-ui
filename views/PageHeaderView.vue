@@ -11,6 +11,8 @@
 </template>
 
 <script>
+  import _ from 'lodash';
+
   export default {
     name: "PageHeaderView",
     props: {
@@ -21,10 +23,10 @@
     },
     data() {
       return {
-        vBreadCrumbs: this.breadcrumbs || [
-          { title: G().appName, link: '/' },
-          { title: `${this.moduleName}管理`, link: this.moduleUrl },
-          { title: this.pageTitle },
+        vBreadCrumbs: !_.isEmpty(this.breadcrumbs) ? this.breadcrumbs : [
+          {title: this.G().appName, link: '/'},
+          {title: `${this.moduleName}管理`, link: this.moduleUrl},
+          {title: this.pageTitle},
         ],
       };
     },

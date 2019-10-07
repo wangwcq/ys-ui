@@ -1,9 +1,11 @@
+import _ from 'lodash';
+
 export default {
   props: {
-    moduleName: { type: String, default: '模块' },
     moduleUrl: { type: String, default: '/' },
     model: { type: String, default: 'data' },
-    pageTitle: { type: String, default: '欢迎' },
+    url: { type: String, default: undefined },
+    apiBody: { type: Object, default: () => ({}) },
   },
   data() {
     return {
@@ -11,12 +13,19 @@ export default {
       attributes: null,
     };
   },
+  computed: {
+    vApi() {
+      if (this.vvApi) return this.vvApi;
+      if (!_.isUndefined(this.url)) return this.url;
+      return `/api/${this.model}/list`;
+    },
+  },
   mounted() {
     this.fetchData();
   },
   methods: {
     async fetchData() {
-      const res = await this.withLoading(this.api(`/api/${this.model}/list`));
+      const res = await this.withLoading(this.api(this.vApi, this.apiBody));
       if (!res) {
         this.$message({
           type: 'error',

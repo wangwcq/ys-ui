@@ -21,26 +21,31 @@
             clearable
             class="ui-admin-model-picker__select"
         >
-          <el-option
+          <ui-option
               v-for="item in options"
               :key="item.value"
               :label="item.label"
               :value="item.value">
             <span style="float: left">{{ item.label }}</span>
             <span style="float: right; color: #aaa; font-size: 13px">#{{ item.value }}</span>
-          </el-option>
+          </ui-option>
         </ui-select>
       </ui-flex>
     </ui-flex>
-    <el-dialog
+    <ui-dialog
         :title="`选择${config.title}`"
         :visible.sync="dialogTableVisible"
+        append-to-body
     >
       <ui-admin-table
           :attributes="tableAttributes"
           :data="tableData"
-          :with-create="false"
+          :model="config.model.appData.apiName"
+          :module-url="`/${config.model.appData.apiName}`"
           :with-actions="false"
+          create-target="_blank"
+          with-refresh
+          @refresh="fetchData"
       >
         <template slot="column__select" slot-scope="{ row }">
           <ui-radio
@@ -52,7 +57,7 @@
           </ui-radio>
         </template>
       </ui-admin-table>
-    </el-dialog>
+    </ui-dialog>
   </div>
 </template>
 

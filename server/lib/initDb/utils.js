@@ -17,6 +17,7 @@ ex.now = () => {
 ex.getFieldType = (vType) => {
   const dict = {
     'string': T.STRING,
+    'date': T.DATEONLY,
     'datetime': T.DATE,
     'int': T.INTEGER,
     'integer': T.INTEGER,
@@ -37,6 +38,7 @@ ex.getListFieldType = (vType) => {
     tag: 'tag',
     password: 'password',
     bool: 'tag',
+    hidden: 'hidden',
   };
   return _.get(dict, vType, dict.string);
 };
@@ -46,11 +48,13 @@ ex.getFormFieldType = (vType) => {
     id: 'readonly__number',
     string: 'string',
     datetime: 'datetime',
+    date: 'date',
     int: 'number',
     integer: 'number',
     tag: 'tag',
     password: 'password',
     bool: 'toggle',
+    hidden: 'hidden',
   };
   return _.get(dict, vType, dict.string);
 };
