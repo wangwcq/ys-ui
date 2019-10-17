@@ -16,7 +16,7 @@ ex.patchListByKey = (list = [], patch = {}, key = 'key') => {
   _.forEach(list, (item, index) => {
     const patchItem = _.get(patch, _.get(item, key));
     if (patchItem) {
-      _.extend(item, patchItem);
+      _.merge(item, patchItem);
     }
   });
   return ret;

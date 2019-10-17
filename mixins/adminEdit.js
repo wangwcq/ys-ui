@@ -103,7 +103,7 @@ mixin.sublist = (options = {}, custom = {}) => {
     buttonText = '添加相关数据',
     idField = '',
   } = options;
-  return _.merge({
+  return _.merge({}, {
     url: `/api/${model}/sub-list/${targetModel}/${id}`,
     model: targetModel,
     moduleUrl: `/${targetModel}`,

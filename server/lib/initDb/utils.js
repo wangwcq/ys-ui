@@ -22,6 +22,7 @@ ex.getFieldType = (vType) => {
     'int': T.INTEGER,
     'integer': T.INTEGER,
     'text': T.TEXT('long'),
+    'float': T.FLOAT,
     'currency': T.DECIMAL(14, 4),
     'tag': T.STRING(25),
     bool: T.BOOLEAN,

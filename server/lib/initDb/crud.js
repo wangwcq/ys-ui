@@ -135,6 +135,7 @@ ex.buildCrudUtils = (model, models) => {
     const { where = {} } = options;
 
     const res = await model.findAll({
+      where,
       order: [
         ['id', 'desc'],
       ],
