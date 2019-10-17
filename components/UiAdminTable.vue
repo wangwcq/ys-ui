@@ -96,6 +96,7 @@
 </template>
 
 <script>
+  import _ from 'lodash';
   import UiTypeDisplay from "./UiTypeDisplay";
   export default {
     name: "UiAdminTable",

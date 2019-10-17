@@ -55,6 +55,7 @@ ex.getFormFieldType = (vType) => {
     password: 'password',
     bool: 'toggle',
     hidden: 'hidden',
+    text: 'text',
   };
   return _.get(dict, vType, dict.string);
 };

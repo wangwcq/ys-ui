@@ -15,6 +15,8 @@ const ensureSeedData = require('./lib/ensureSeedData/index');
 const useCustomFields = require('./lib/useCustomFields/index');
 const useSubList = require('./lib/useSubList/index');
 
+const utils = require('./lib/utils');
+
 const main = async (config = {}) => {
   const {
     routers = () => {},
@@ -43,6 +45,7 @@ module.exports = {
   requireDir,
   lodash,
   _: lodash,
+  utils,
   Router,
   consts,
 

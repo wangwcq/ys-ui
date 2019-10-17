@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 const mixin = {
   props: {
     moduleUrl: { type: String, default: '/' },
@@ -85,5 +83,41 @@ const mixin = {
  * @param {Object} options.dataDefault
  */
 mixin.createWith = (options = {}) => options;
+
+/**
+ * util sublist
+ * @param {Object} options
+ * @param {string} options.model
+ * @param {string} options.id
+ * @param {string} options.targetModel
+ * @param {Object} options.ComponentEditWith
+ * @param {string} options.buttonText
+ * @param {string} options.idField
+ */
+mixin.sublist = (options = {}, custom = {}) => {
+  const {
+    model = '',
+    id = '',
+    targetModel = '',
+    ComponentEditWith = null,
+    buttonText = '添加相关数据',
+    idField = '',
+  } = options;
+  return _.merge({
+    url: `/api/${model}/sub-list/${targetModel}/${id}`,
+    model: targetModel,
+    moduleUrl: `/${targetModel}`,
+    editWith: ComponentEditWith,
+    createWith: {
+      component: ComponentEditWith,
+      dataDefault: {
+        [idField]: Number(id),
+      },
+      model: targetModel,
+      moduleUrl: `/${targetModel}`,
+      buttonText,
+    },
+  }, custom);
+};
 
 export default mixin;

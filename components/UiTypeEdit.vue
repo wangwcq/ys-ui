@@ -21,11 +21,30 @@
       />
     </template>
 
+    <template v-else-if="type === 'datetime'">
+      <ui-datetime-picker
+          v-model="value"
+          placeholder="请选择时间"
+          @input="onInput"
+      />
+    </template>
+
     <template v-else-if="type === 'model'">
       <ui-admin-model-picker
           :value="value"
           @input="onInput"
           :config="config"
+      />
+    </template>
+
+    <template v-else-if="type === 'text'">
+      <ui-input
+          type="textarea"
+          :rows="3"
+          :value="value"
+          @input="onInput"
+          autocomplete="off"
+          :autosize="{ minRows: 3, maxRows: 20 }"
       />
     </template>
 

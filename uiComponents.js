@@ -8,6 +8,7 @@ import UiFlex from './components/UiFlex';
 import UiPageHeader from './components/UiPageHeader';
 import UiMediaBox from './components/UiMediaBox';
 import UiPlaceholder from './components/UiPlaceholder';
+import UiDatetimePicker from "./components/UiDatetimePicker";
 import UiStage from './components/UiStage';
 import UiAdminTable from "./components/UiAdminTable";
 import UiAdminForm from './components/UiAdminForm';
@@ -33,4 +34,5 @@ export default (iVue) => {
   Vue.component('ui-admin-table', UiAdminTable);
   Vue.component('ui-admin-form', UiAdminForm);
   Vue.component('ui-sub-list', UiSubList);
+  Vue.component('ui-datetime-picker', UiDatetimePicker);
 };

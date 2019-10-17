@@ -2,26 +2,29 @@
   <div>
     <ui-form :model="model" label-width="150px">
       <ui-flex row wrap>
-        <ui-flex
-            v-if="field.type !== 'hidden'"
-            :style="`flex: 1 0 ${1 / cols * 100}%;`"
+        <template
             v-for="field in fields"
-            :key="field.name"
         >
-          <template>
-            <ui-form-item
-                :label="`${field.title}：`"
-            >
-              <ui-type-edit
-                  :type="field.type"
-                  v-model="model[field.name]"
-                  @input="handleFieldChange"
-                  :config="field"
-                  :readonly="readonly"
-              />
-            </ui-form-item>
-          </template>
-        </ui-flex>
+          <ui-flex
+              v-if="field.type !== 'hidden'"
+              :style="`flex: 1 0 ${1 / cols * 100}%;`"
+              :key="field.name"
+          >
+            <template>
+              <ui-form-item
+                  :label="`${field.title}：`"
+              >
+                <ui-type-edit
+                    :type="field.type"
+                    v-model="model[field.name]"
+                    @input="handleFieldChange"
+                    :config="field"
+                    :readonly="readonly"
+                />
+              </ui-form-item>
+            </template>
+          </ui-flex>
+        </template>
       </ui-flex>
 
       <div class="ui-admin-form__submit">
