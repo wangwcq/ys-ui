@@ -29,6 +29,22 @@
       />
     </template>
 
+    <template v-else-if="type === 'select'">
+      <ui-select
+          :value="value"
+          @input="onInput"
+          filterable
+          clearable
+      >
+        <ui-option
+            v-for="(option, optionIndex) in config.options"
+            :key="optionIndex"
+            :label="option"
+            :value="option"
+        />
+      </ui-select>
+    </template>
+
     <template v-else-if="type === 'model'">
       <ui-admin-model-picker
           :value="value"

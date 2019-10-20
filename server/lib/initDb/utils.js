@@ -37,6 +37,7 @@ ex.getListFieldType = (vType) => {
     int: 'number',
     integer: 'number',
     tag: 'tag',
+    select: 'tag',
     password: 'password',
     bool: 'tag',
     hidden: 'hidden',
@@ -57,6 +58,7 @@ ex.getFormFieldType = (vType) => {
     bool: 'toggle',
     hidden: 'hidden',
     text: 'text',
+    select: 'select',
   };
   return _.get(dict, vType, dict.string);
 };
