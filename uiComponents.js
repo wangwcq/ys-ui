@@ -13,6 +13,7 @@ import UiStage from './components/UiStage';
 import UiAdminTable from "./components/UiAdminTable";
 import UiAdminForm from './components/UiAdminForm';
 import UiSubList from './components/UiSubList';
+import UiDataSelect from './components/UiDataSelect';
 
 import './utils.less';
 
@@ -33,6 +34,7 @@ export default (iVue) => {
   Vue.component('ui-flex', UiFlex);
   Vue.component('ui-admin-table', UiAdminTable);
   Vue.component('ui-admin-form', UiAdminForm);
+  Vue.component('ui-data-select', UiDataSelect);
   Vue.component('ui-sub-list', UiSubList);
   Vue.component('ui-datetime-picker', UiDatetimePicker);
 };

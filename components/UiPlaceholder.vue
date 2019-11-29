@@ -23,6 +23,7 @@
 
 <style lang="less">
   .ui-placeholder {
+    display: none !important;
     background: fadeout(#000, 90);
     border: dashed 2px fadeout(#000, 80);
     border-radius: 3px;

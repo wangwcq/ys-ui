@@ -1,13 +1,13 @@
 <template>
   <div>
-    <ui-form :model="model" label-width="150px">
+    <ui-form :model="model" :label-position="labelPosition" label-width="150px">
       <ui-flex row wrap>
         <template
             v-for="field in fields"
         >
           <ui-flex
               v-if="field.type !== 'hidden'"
-              :style="`flex: 1 0 ${1 / cols * 100}%;`"
+              :style="`flex: 1 0 ${1 / cols * 100}%; padding: 0 ${gutter}px`"
               :key="field.name"
           >
             <template>
@@ -27,14 +27,14 @@
         </template>
       </ui-flex>
 
-      <div class="ui-admin-form__submit">
+      <div class="ui-admin-form__submit" v-if="withSubmitRow">
         <ui-button
             type="primary"
             icon="el-icon-success"
             @click="() => { $emit('submit'); isDirty = false; }"
-            v-if="isDirty"
+            v-if="withSave && isDirty"
         >
-          保存
+          {{ submitButtonText }}
         </ui-button>
         <router-link
             v-if="withDelete && model.id"
@@ -63,11 +63,20 @@
       withDelete: { type: Boolean, default: false },
       cols: { type: Number, default: 1 },
       readonly: { type: Boolean, default: false },
+      submitButtonText: { type: String, default: '保存' },
+      labelPosition: { type: String, default: 'right' },
+      withSave: { type: Boolean, default: true },
+      gutter: { type: Number, default: 8 },
     },
     data() {
       return {
         isDirty: false,
       };
+    },
+    computed: {
+      withSubmitRow() {
+        return this.withSave || this.withDelete;
+      },
     },
     methods: {
       handleFieldChange() {

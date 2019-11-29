@@ -249,9 +249,10 @@ class App {
   }
 
   async serverStartup() {
-    const { config } = this;
+    const { config, app } = this;
     if (_.isFunction(config.serverStartup)) {
-      await config.serverStartup();
+      await config.serverStartup({ app });
+      console.log('Finish server startup setup');
     }
   }
 

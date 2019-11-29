@@ -14,6 +14,7 @@ const initDb = require('./lib/initDb/index');
 const ensureSeedData = require('./lib/ensureSeedData/index');
 const useCustomFields = require('./lib/useCustomFields/index');
 const useSubList = require('./lib/useSubList/index');
+const useComments = require('./lib/useComments/index');
 
 const utils = require('./lib/utils');
 
@@ -54,4 +55,5 @@ module.exports = {
 
   useCustomFields,
   useSubList,
+  useComments,
 };

@@ -55,6 +55,11 @@
           >
             {{null}}
           </ui-radio>
+          <ui-link
+              v-if="!config.hideView"
+              target="_blank"
+              :href="`/${config.model.appData.apiName}/edit/${row.id}`"
+          >查看</ui-link>
         </template>
       </ui-admin-table>
     </ui-dialog>
@@ -111,8 +116,8 @@
           {
             name: '_select',
             title: '选择',
-            width: 80,
-            align: 'center',
+            width: !this.config.hideView ? 110 : 80,
+            align: 'left',
           },
           ...attributes,
         ];

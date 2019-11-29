@@ -1,4 +1,5 @@
 const KoaRouter = require('koa-router');
+const utils = require('../utils');
 
 /**
  * useSubList
@@ -36,7 +37,7 @@ module.exports = (options = {}) => {
     });
     ctx.jsonOk({
       attributes: targetModel.crud.listAttributes,
-      list: res[association],
+      list: utils.ensureArray(res[association]),
     });
   });
 

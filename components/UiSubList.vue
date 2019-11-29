@@ -6,7 +6,7 @@
       :module-url="moduleUrl"
       position-create="end"
       :with-actions="false"
-      :with-create="!createWith"
+      :with-create="!noCreate && !createWith"
       expandable
       :default-expand-all="defaultExpandAll"
       :handle-create="vHandleCreate"
@@ -22,7 +22,7 @@
       />
     </template>
     <slot slot="table-end" name="table-end">
-      <template v-if="createWith">
+      <template v-if="!noCreate && createWith">
         <ui-button style="width: 100%" size="small" type="primary" plain round icon="el-icon-edit" @click="() => dialogCreateVisible = true">{{ createWith.buttonText || '添加绑定' }}</ui-button>
         <ui-dialog
             :title="createWith.buttonText || '添加绑定'"
@@ -54,6 +54,7 @@
       createWith: { type: Object, default: null },
       defaultExpandAll: { type: Boolean, default: false },
       handleCreate: { type: Function, default: null },
+      noCreate: { type: Boolean, default: false },
     },
     data() {
       return {

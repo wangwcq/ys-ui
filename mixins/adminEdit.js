@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const mixin = {
   props: {
     moduleUrl: { type: String, default: '/' },
@@ -93,6 +95,7 @@ mixin.createWith = (options = {}) => options;
  * @param {Object} options.ComponentEditWith
  * @param {string} options.buttonText
  * @param {string} options.idField
+ * @param {Boolean} options.noCreate
  */
 mixin.sublist = (options = {}, custom = {}) => {
   const {
@@ -102,6 +105,7 @@ mixin.sublist = (options = {}, custom = {}) => {
     ComponentEditWith = null,
     buttonText = '添加相关数据',
     idField = '',
+    noCreate = false,
   } = options;
   return _.merge({}, {
     url: `/api/${model}/sub-list/${targetModel}/${id}`,
@@ -117,6 +121,7 @@ mixin.sublist = (options = {}, custom = {}) => {
       moduleUrl: `/${targetModel}`,
       buttonText,
     },
+    noCreate,
   }, custom);
 };
 
