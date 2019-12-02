@@ -21,6 +21,7 @@
     "koa-swagger-ui": "^1.1.1",
     "koa2-connect-history-api-fallback": "^0.1.2",
     "lodash": "^4.17.15",
+    "md5": "^2.2.1",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26",
     "mysql2": "^1.7.0",

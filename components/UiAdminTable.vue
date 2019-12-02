@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="ui-admin-table">
     <div class="ui-admin-table__toolbar">
       <component
           :is="vLinkCreate ? 'router-link' : 'a'"
@@ -152,6 +152,15 @@
   }
   &__end {
     margin-top: 15px;
+  }
+  .el-table__expanded-cell {
+    padding: 0;
+    .el-card.is-always-shadow, .el-card.is-hover-shadow:focus, .el-card.is-hover-shadow:hover {
+      box-shadow: none;
+    }
+    .el-tabs--border-card {
+      box-shadow: none;
+    }
   }
 }
 </style>

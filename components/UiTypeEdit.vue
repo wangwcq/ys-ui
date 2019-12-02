@@ -9,7 +9,7 @@
     </template>
 
     <template v-else-if="type === 'password'">
-      <ui-input :value="value" type="password" @input="onInput" />
+      <ui-input :value="value" type="password" @input="onInput" autocomplete="off" auto-complete="off" show-password />
     </template>
 
     <template v-else-if="type === 'date'">

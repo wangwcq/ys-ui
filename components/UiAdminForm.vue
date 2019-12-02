@@ -37,8 +37,8 @@
           {{ submitButtonText }}
         </ui-button>
         <router-link
-            v-if="withDelete && model.id"
-            :to="`${moduleUrl}/delete/${model.id}`"
+            v-if="withDelete && (model.id || id)"
+            :to="`${moduleUrl}/delete/${model.id || id}`"
             class="ml"
         >
           <ui-button type="info" icon="el-icon-delete">
@@ -57,6 +57,7 @@
     name: "UiAdminForm",
     components: {UiTypeEdit},
     props: {
+      id: { type: String, default: '' },
       model: { type: Object, default: () => ({}) },
       fields: { type: Array, default: () => ([]) },
       moduleUrl: { type: String, default: '/' },

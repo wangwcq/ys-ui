@@ -40,8 +40,9 @@ module.exports = function(options = {}) {
     await next();
   });
 
-  routerCustomFields.post(`/:key/:id`, async (ctx) => {
-    const { key = '', id = null } = ctx.params;
+  routerCustomFields.post([`/:key/:id`, `/:key/:id1/:id2`], async (ctx) => {
+    let { key = '', id = null, id1 = null, id2 = null } = ctx.params;
+    if (!id && id1 && id2) { id = `${id1}/${id2}`; }
     if (!id) throw new Error(`${errorPrefixFrontEnd} 请输入正确的数据ID`);
 
     let fields = await CustomFields.findOne({
@@ -68,8 +69,10 @@ module.exports = function(options = {}) {
     });
   });
 
-  routerCustomFields.post(`/save/:key/:id`, async (ctx) => {
-    const { key = '', id = '' } = ctx.params;
+  routerCustomFields.post([`/save/:key/:id`, '/save/:key/:id1/:id2'], async (ctx) => {
+    const { key = '', id = '', id1 = null, id2 = null } = ctx.params;
+    if (!id && id1 && id2) { id = `${id1}/${id2}`; }
+
     const body = ctx.request.body;
     if (!id) throw new Error(`${errorPrefixFrontEnd} 请输入正确的数据ID`);
 

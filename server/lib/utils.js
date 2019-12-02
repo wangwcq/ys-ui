@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const md5 = require('md5');
 
 const ex = {};
 module.exports = ex;
@@ -37,5 +38,13 @@ ex.getMapFromList = (list = [], key = 'key') => {
   _.forEach(list, (item) => {
     ret[_.get(item,key)] = item;
   });
+  return ret;
+};
+
+ex.encodePassword = (password, method = 'md5') => {
+  let ret = password;
+  if (method === 'md5') {
+    ret = md5(password);
+  }
   return ret;
 };

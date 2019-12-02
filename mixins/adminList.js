@@ -6,6 +6,8 @@ export default {
     model: { type: String, default: 'data' },
     url: { type: String, default: undefined },
     apiBody: { type: Object, default: () => ({}) },
+    parseAttributes: { type: Function, default: o => o },
+    parseListData: { type: Function, default: o => o },
   },
   data() {
     return {
@@ -34,8 +36,8 @@ export default {
         return;
       }
       const { attributes, list } = res;
-      this.attributes = attributes;
-      this.data = list;
+      this.attributes = await this.parseAttributes(attributes);
+      this.data = await this.parseListData(list);
     },
   },
 };

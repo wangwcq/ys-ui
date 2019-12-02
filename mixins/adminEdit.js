@@ -9,7 +9,9 @@ const mixin = {
     afterSubmit: {
       type: Function,
       default: function() {
-        this.$router.push(`${this.moduleUrl}/`);
+        if (this.id) {
+          this.$router.push(`${this.moduleUrl}/`);
+        }
       },
     },
   },

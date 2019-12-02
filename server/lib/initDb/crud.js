@@ -150,15 +150,22 @@ ex.buildCrudUtils = (model, models) => {
     return res;
   };
   model.crud.getItemById = async function (id) {
+    let vId = id;
+    if (typeof vId !== 'object') {
+      vId = { id: vId };
+    }
     const item = await model.findOne({
-      where: { id },
-      include: _.map(_.filter(model.crud.formAttributes, attribute => attribute.model), (field) => {
+      where: vId,
+      include: _.filter(_.map(_.filter(model.crud.formAttributes, attribute => attribute.model), (field) => {
         const { model: association } = field;
+        if (!model[association.alias]) {
+          return;
+        }
         return {
           association: model[association.alias],
           attributes: models[association.name].fieldsDefinition._titleFields,
         };
-      }),
+      }), Boolean),
     });
     return item;
   };
@@ -182,7 +189,9 @@ ex.buildCrudUtils = (model, models) => {
     return item;
   };
   model.crud.deleteItem = async function(id) {
-    const item = await model.findOne({ where: { id } });
+    let vId = id;
+    if (typeof vId !== 'object') { vId = { id: vId }; }
+    const item = await model.findOne({ where: vId });
     if (!item) return { code: 1, message: '指定的数据不存在' };
     await item.destroy();
     return { code: 0 };
