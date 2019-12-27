@@ -15,6 +15,7 @@
     <ui-table
         :data="data"
         :default-expand-all="defaultExpandAll"
+        :show-header="showHeader"
     >
       <ui-table-column v-if="expandable" type="expand">
         <template slot-scope="scope">
@@ -31,47 +32,52 @@
           </slot>
         </template>
       </ui-table-column>
-      <ui-table-column
+      <template
           v-for="col in columns"
-          :key="col.name"
-          :prop="col.name"
-          :label="col.title"
-          :width="col.width"
-          :min-width="col.minWidth"
-          :align="col.align"
       >
-        <template slot-scope="scope">
-          <slot
-              :name="`column_${col.name}`"
-              v-bind="scope"
-          >
-            <div
-                v-if="col.name === '_adminActions'"
+        <ui-table-column
+            :key="col.name"
+            v-if="col.type !== 'hidden'"
+            :prop="col.name"
+            :label="col.title"
+            :width="col.width"
+            :min-width="col.minWidth"
+            :align="col.align"
+        >
+          <template slot-scope="scope">
+            <slot
+                :name="`column_${col.name}`"
+                v-bind="scope"
             >
-              <ui-button-group>
-                <router-link :to="`${moduleUrl}/edit/${scope.row.id}`">
-                  <ui-button size="mini" type="primary" icon="el-icon-edit">编辑</ui-button>
-                </router-link>
-                <router-link :to="`${moduleUrl}/delete/${scope.row.id}`">
-                  <ui-button size="mini" type="info" icon="el-icon-delete">删除</ui-button>
-                </router-link>
-              </ui-button-group>
-            </div>
-            <ui-type-display
-                v-else-if="col.model"
-                :type="col.model.type"
-                :collection="scope.row[col.model.alias]"
-                :path="col.model.titleFields"
-            ></ui-type-display>
-            <ui-type-display
-                v-else
-                :type="col.type"
-                :collection="scope.row"
-                :path="col.name"
-            />
-          </slot>
-        </template>
-      </ui-table-column>
+              <template v-if="col.type === 'hidden'" />
+              <div
+                  v-else-if="col.name === '_adminActions'"
+              >
+                <ui-button-group>
+                  <router-link :to="`${moduleUrl}/edit/${scope.row.id}`">
+                    <ui-button size="mini" type="primary" icon="el-icon-edit">编辑</ui-button>
+                  </router-link>
+                  <router-link :to="`${moduleUrl}/delete/${scope.row.id}`">
+                    <ui-button size="mini" type="info" icon="el-icon-delete">删除</ui-button>
+                  </router-link>
+                </ui-button-group>
+              </div>
+              <ui-type-display
+                  v-else-if="col.model"
+                  :type="col.model.type"
+                  :collection="scope.row[col.model.alias]"
+                  :path="col.model.titleFields"
+              ></ui-type-display>
+              <ui-type-display
+                  v-else
+                  :type="col.type"
+                  :collection="scope.row"
+                  :path="col.name"
+              />
+            </slot>
+          </template>
+        </ui-table-column>
+      </template>
     </ui-table>
     <div class="ui-admin-table__end">
       <slot name="table-end"></slot>
@@ -90,6 +96,7 @@
         <ui-flex v-if="withRefresh && positionCreate === 'end'" class="ml">
           <ui-button size="small" icon="el-icon-refresh" @click="() => $emit('refresh')">刷新</ui-button>
         </ui-flex>
+        <slot name="end" />
       </ui-flex>
     </div>
   </div>
@@ -114,6 +121,7 @@
       defaultExpandAll: { type: Boolean, default: false },
       linkCreate: { type: String, default: undefined },
       handleCreate: { type: Function, default: null },
+      showHeader: { type: Boolean, default: true },
     },
     emits: ['refresh'],
     computed: {

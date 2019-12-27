@@ -9,11 +9,14 @@ const mixin = {
     afterSubmit: {
       type: Function,
       default: function() {
-        if (this.id) {
-          this.$router.push(`${this.moduleUrl}/`);
-        }
+        this.$router.push(`${this.moduleUrl}/`);
       },
     },
+    lockedFields: { type: Array, default: () => [] },
+    readonly: { type: Boolean, default: false },
+    compact: { type: Boolean, default: false },
+    disableEditLink: { type: Boolean, default: false },
+    compactTabs: { type: Boolean, default: false },
   },
   emits: ['after-submit'],
   data() {
@@ -35,7 +38,23 @@ const mixin = {
       const {
         attributes = [],
         item = {},
-      } = await this.withLoading(this.api(`/api/${this.model}/edit/${id || ''}`));
+      } = await this.withLoading(this.api(`/api/${this.model}/edit/${id || ''}`, { ..._.get(this.$route, 'query', {}) }));
+
+      const lockedFields = [
+        ...this.lockedFields || [],
+        ..._.keys(_.get(this.$route, 'query', {})),
+      ];
+      _.forEach(lockedFields, field => {
+        const findField = _.find(attributes, item => item.name === field);
+        if (!findField) return true;
+        _.set(findField, 'readonly', true);
+        if (findField.type) {
+          if (!_.startsWith(findField.type, 'readonly__')) {
+            _.set(findField, 'type', `readonly__${findField.type}`);
+          }
+        }
+        return true;
+      });
       this.attributes = attributes;
       this.data = item;
       if (!id) {
@@ -85,6 +104,7 @@ const mixin = {
  * @param {string} options.model
  * @param {string} options.buttonText
  * @param {Object} options.dataDefault
+ * @param {Array} options.lockedFields
  */
 mixin.createWith = (options = {}) => options;
 
@@ -97,7 +117,10 @@ mixin.createWith = (options = {}) => options;
  * @param {Object} options.ComponentEditWith
  * @param {string} options.buttonText
  * @param {string} options.idField
+ * @param {Array} options.lockedFields
  * @param {Boolean} options.noCreate
+ * @param {Array} options.hiddenColumns
+ * @param {Boolean} options.disableEditLink
  */
 mixin.sublist = (options = {}, custom = {}) => {
   const {
@@ -107,7 +130,10 @@ mixin.sublist = (options = {}, custom = {}) => {
     ComponentEditWith = null,
     buttonText = '添加相关数据',
     idField = '',
+    lockedFields = [],
     noCreate = false,
+    hiddenColumns = [],
+    disableEditLink = false,
   } = options;
   return _.merge({}, {
     url: `/api/${model}/sub-list/${targetModel}/${id}`,
@@ -119,11 +145,14 @@ mixin.sublist = (options = {}, custom = {}) => {
       dataDefault: {
         [idField]: Number(id),
       },
+      lockedFields,
       model: targetModel,
       moduleUrl: `/${targetModel}`,
       buttonText,
     },
     noCreate,
+    hiddenColumns,
+    disableEditLink,
   }, custom);
 };
 

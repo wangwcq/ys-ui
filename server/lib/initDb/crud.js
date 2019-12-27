@@ -130,7 +130,15 @@ ex.buildCrudUtils = (model, models) => {
   model.crud = {};
   model.crud.listAttributes = getListAttributes(fields);
   model.crud.formAttributes = getFormAttributes(fields);
-  model.crud.newItem = fields._newItem || (() => createNewItemByFields(model.crud.formAttributes));
+  model.crud.newItem = (ctx) => {
+    let item = {};
+    if (fields._newItem) {
+      item = fields._newItem(ctx);
+    } else {
+      item = createNewItemByFields(model.crud.formAttributes);
+    }
+    return _.extend(item, { ..._.get(ctx, 'request.body') });
+  };
   model.crud.listAll = async function (options = {}) {
     const { where = {} } = options;
 

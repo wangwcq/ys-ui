@@ -110,7 +110,7 @@
           };
         });
         this.options = list;
-        const selectedOption = _.find(list, item => item.value === this.value);
+        const selectedOption = _.find(list, item => item.value == this.value);
         this.displayValue = _.get(selectedOption, 'label', '-');
         this.tableAttributes = [
           {

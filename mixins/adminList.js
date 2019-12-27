@@ -8,6 +8,7 @@ export default {
     apiBody: { type: Object, default: () => ({}) },
     parseAttributes: { type: Function, default: o => o },
     parseListData: { type: Function, default: o => o },
+    hiddenColumns: { type: Array, default: () => [] },
   },
   data() {
     return {
@@ -37,6 +38,7 @@ export default {
       }
       const { attributes, list } = res;
       this.attributes = await this.parseAttributes(attributes);
+      this.attributes = _.filter(this.attributes, attribute => _.indexOf(this.hiddenColumns || [], attribute.name) === -1);
       this.data = await this.parseListData(list);
     },
   },

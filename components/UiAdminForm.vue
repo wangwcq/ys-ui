@@ -1,6 +1,12 @@
 <template>
   <div>
-    <ui-form :model="model" :label-position="labelPosition" label-width="150px">
+    <ui-form
+        :model="model"
+        :label-position="labelPosition"
+        label-width="150px"
+        :size="compact ? 'mini' : 'medium'"
+        :inline="compact"
+    >
       <ui-flex row wrap>
         <template
             v-for="field in fields"
@@ -36,6 +42,17 @@
         >
           {{ submitButtonText }}
         </ui-button>
+        <slot name="editLink" v-bind="{ readonly, compact, disableEditLink, model }">
+          <router-link
+              v-if="readonly && compact && !disableEditLink && (model.id || id)"
+              :to="`${moduleUrl}/edit/${model.id || id}`"
+              class="ml"
+          >
+            <ui-button type="primary" icon="el-icon-delete">
+              编辑
+            </ui-button>
+          </router-link>
+        </slot>
         <router-link
             v-if="withDelete && (model.id || id)"
             :to="`${moduleUrl}/delete/${model.id || id}`"
@@ -63,11 +80,13 @@
       moduleUrl: { type: String, default: '/' },
       withDelete: { type: Boolean, default: false },
       cols: { type: Number, default: 1 },
-      readonly: { type: Boolean, default: false },
       submitButtonText: { type: String, default: '保存' },
       labelPosition: { type: String, default: 'right' },
       withSave: { type: Boolean, default: true },
       gutter: { type: Number, default: 8 },
+      readonly: { type: Boolean, default: false },
+      compact: { type: Boolean, default: false },
+      disableEditLink: { type: Boolean, default: false },
     },
     data() {
       return {

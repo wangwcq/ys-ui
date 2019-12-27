@@ -30,5 +30,8 @@
         ];
       },
     },
+    mounted() {
+      document.title = `${this.pageTitle} - WANLYAN APP`;
+    },
   }
 </script>

@@ -19,6 +19,9 @@
           :model="model"
           :module-url="moduleUrl"
           :after-submit="() => { fetchData(); }"
+          readonly
+          compact
+          :disableEditLink="disableEditLink"
       />
     </template>
     <slot slot="table-end" name="table-end">
@@ -35,6 +38,8 @@
               :module-url="createWith.moduleUrl"
               :after-submit="afterCreate"
               :data-default="createWith.dataDefault || {}"
+              :locked-fields="createWith.lockedFields"
+              compactTabs
           />
         </ui-dialog>
       </template>
@@ -55,6 +60,7 @@
       defaultExpandAll: { type: Boolean, default: false },
       handleCreate: { type: Function, default: null },
       noCreate: { type: Boolean, default: false },
+      disableEditLink: { type: Boolean, default: false },
     },
     data() {
       return {
