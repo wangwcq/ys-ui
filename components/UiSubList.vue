@@ -7,7 +7,7 @@
       position-create="end"
       :with-actions="false"
       :with-create="!noCreate && !createWith"
-      expandable
+      :expandable="expandable"
       :default-expand-all="defaultExpandAll"
       :handle-create="vHandleCreate"
       v-bind="$attrs"
@@ -22,6 +22,7 @@
           readonly
           compact
           :disableEditLink="disableEditLink"
+          compactTabs
       />
     </template>
     <slot slot="table-end" name="table-end">
@@ -31,6 +32,7 @@
             :title="createWith.buttonText || '添加绑定'"
             :visible.sync="dialogCreateVisible"
             append-to-body
+            width="80%"
         >
           <component
               :is="createWith.component"
@@ -61,6 +63,7 @@
       handleCreate: { type: Function, default: null },
       noCreate: { type: Boolean, default: false },
       disableEditLink: { type: Boolean, default: false },
+      expandable: { type: Boolean, default: true },
     },
     data() {
       return {

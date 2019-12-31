@@ -14,6 +14,7 @@ export default {
     return {
       data: null,
       attributes: null,
+      tab: 'main',
     };
   },
   computed: {

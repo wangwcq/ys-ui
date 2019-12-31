@@ -26,6 +26,7 @@ const mixin = {
       customFields: null,
       customFieldsData: null,
       subLists: {},
+      tab: 'main',
     };
   },
   mounted() {
@@ -121,6 +122,7 @@ mixin.createWith = (options = {}) => options;
  * @param {Boolean} options.noCreate
  * @param {Array} options.hiddenColumns
  * @param {Boolean} options.disableEditLink
+ * @param {Boolean} options.expandable
  */
 mixin.sublist = (options = {}, custom = {}) => {
   const {
@@ -134,6 +136,7 @@ mixin.sublist = (options = {}, custom = {}) => {
     noCreate = false,
     hiddenColumns = [],
     disableEditLink = false,
+    expandable = true,
   } = options;
   return _.merge({}, {
     url: `/api/${model}/sub-list/${targetModel}/${id}`,
@@ -153,6 +156,7 @@ mixin.sublist = (options = {}, custom = {}) => {
     noCreate,
     hiddenColumns,
     disableEditLink,
+    expandable,
   }, custom);
 };
 

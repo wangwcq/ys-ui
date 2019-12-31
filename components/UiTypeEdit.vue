@@ -9,7 +9,7 @@
     </template>
 
     <template v-else-if="type === 'password'">
-      <ui-input :value="value" type="password" @input="onInput" autocomplete="off" auto-complete="off" show-password />
+      <ui-input :value="value" type="password" @input="onInput" autocomplete="new-password" auto-complete="new-password" show-password />
     </template>
 
     <template v-else-if="type === 'date'">
@@ -53,6 +53,14 @@
       />
     </template>
 
+    <template v-else-if="type === 'modelList'">
+      <ui-admin-model-list-input
+          :value="value"
+          @input="onInput"
+          :config="config"
+      />
+    </template>
+
     <template v-else-if="type === 'text'">
       <ui-input
           type="textarea"
@@ -76,10 +84,11 @@
   import moment from 'moment';
   import UiTypeDisplay from "./UiTypeDisplay";
   import UiAdminModelPicker from "./UiAdminModelPicker";
+  import UiAdminModelListInput from "./UiAdminModelListInput";
 
   export default {
     name: "UiTypeEdit",
-    components: {UiAdminModelPicker, UiTypeDisplay},
+    components: {UiAdminModelListInput, UiAdminModelPicker, UiTypeDisplay},
     props: {
       type: { type: String, default: 'string' },
       value: { default: undefined },

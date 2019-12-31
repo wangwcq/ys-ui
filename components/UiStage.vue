@@ -1,6 +1,8 @@
 <template>
   <div class="ui-stage">
-    <slot></slot>
+    <div class="ui-stage__scroll">
+      <slot />
+    </div>
   </div>
 </template>
 
@@ -12,6 +14,11 @@
 
 <style lang="less">
 .ui-stage {
-  padding: 12px 24px;
+  padding: 8px 16px;
+  box-sizing: border-box;
+  &__scroll {
+    overflow-x: auto;
+    padding: 8px 8px 16px;
+  }
 }
 </style>

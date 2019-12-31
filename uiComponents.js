@@ -3,6 +3,7 @@ import mVue from 'vue';
 import _ from 'lodash';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+import './utils.less';
 
 import UiFlex from './components/UiFlex';
 import UiPageHeader from './components/UiPageHeader';
@@ -15,7 +16,6 @@ import UiAdminForm from './components/UiAdminForm';
 import UiSubList from './components/UiSubList';
 import UiDataSelect from './components/UiDataSelect';
 
-import './utils.less';
 
 export default (iVue) => {
   const Vue = iVue || mVue;
