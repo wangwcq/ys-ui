@@ -31,7 +31,7 @@
     computed: {
       vOptions() {
         if (_.isArray(this.options)) {
-          return _.map(this.options, (option, optionIndex) => {
+          return _.map(this.options, (option) => {
             if (_.isObject(option)) {
               return option;
             }

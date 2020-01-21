@@ -55,6 +55,10 @@ function main(params = {}) {
 
 const G = globalData.methods.G;
 
+const formatPrice = (value, format = '0,0.00') => numeral(value).format(format);
+
+const formatDateTime = (value, format = 'YYYY-MM-DD HH:mm:ss') => moment(value).format(format);
+
 export {
   Vue,
   _,
@@ -65,4 +69,7 @@ export {
   main,
   views,
   G,
+
+  formatPrice,
+  formatDateTime,
 };

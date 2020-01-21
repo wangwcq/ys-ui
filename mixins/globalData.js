@@ -9,6 +9,7 @@ if (typeof window !== 'undefined') {
 
 export default {
   methods: {
+    $get: _.get,
     G() {
       return globalData;
     },

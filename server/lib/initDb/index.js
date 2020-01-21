@@ -36,6 +36,7 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
           beforeValidate: () => db.query('SET autocommit = 1'),
         },
       },
+      logging: () => {},
     },
   );
 

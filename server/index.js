@@ -4,7 +4,10 @@ const serve = require('koa-static');
 const KoaBody = require('koa-body');
 const libRequireDir = require('require-dir');
 const paths = require('path');
+const proxy = require('koa-proxies');
 const Router = require('koa-router');
+const moment = require('moment');
+const axios = require('axios');
 
 const KoaApp = require('./lib/koa-app');
 const Logger = require('./lib/logger');
@@ -29,6 +32,7 @@ const main = async (config = {}) => {
 
   app.app.use(app.koaHistory);
   app.app.use(serve('./dist'));
+  app.app.use(serve('./files'));
 
   app.serve();
 };
@@ -45,6 +49,7 @@ module.exports = {
   Logger,
   requireDir,
   lodash,
+  axios,
   _: lodash,
   utils,
   Router,
@@ -56,4 +61,6 @@ module.exports = {
   useCustomFields,
   useSubList,
   useComments,
+
+  moment
 };
