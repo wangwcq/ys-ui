@@ -57,7 +57,7 @@
                   <router-link :to="`${moduleUrl}/edit/${scope.row.id}`">
                     <ui-button size="mini" type="primary" icon="el-icon-edit">编辑</ui-button>
                   </router-link>
-                  <router-link :to="`${moduleUrl}/delete/${scope.row.id}`">
+                  <router-link :to="`${moduleUrl}/delete/${scope.row.id}?backUrl=${encodeURIComponent($route.fullPath)}`">
                     <ui-button size="mini" type="info" icon="el-icon-delete">删除</ui-button>
                   </router-link>
                 </ui-button-group>

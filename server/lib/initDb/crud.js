@@ -178,8 +178,12 @@ ex.buildCrudUtils = (model, models) => {
     return item;
   };
   model.crud.saveItem = async function (data, id) {
+    console.log({ data, id, fields: model.crud.formAttributes, pk: model.primaryKeyAttributes });
     const saveData = { ...data };
     _.forEach(model.crud.formAttributes, field => {
+      if (field.name === 'id' && field.ignored) {
+        delete saveData[field.name];
+      }
       if (field.model && !saveData[field.name]) {
         saveData[field.name] = null;
       }
@@ -189,6 +193,7 @@ ex.buildCrudUtils = (model, models) => {
     _.forEach(model.primaryKeyAttributes, field => {
       where[field] = _.get(data, field, null);
     });
+    console.log({ where, saveData });
     const [item] = await model.findOrCreate({
       where,
       defaults: saveData,

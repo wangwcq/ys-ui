@@ -40,7 +40,7 @@ module.exports = function(options = {}) {
     await next();
   });
 
-  routerCustomFields.post([`/:key/:id`, `/:key/:id1/:id2`], async (ctx) => {
+  const routeCustomFields = async (ctx) => {
     let { key = '', id = null, id1 = null, id2 = null } = ctx.params;
     if (!id && id1 && id2) { id = `${id1}/${id2}`; }
     if (!id) throw new Error(`${errorPrefixFrontEnd} 请输入正确的数据ID`);
@@ -49,6 +49,9 @@ module.exports = function(options = {}) {
       where: {
         key,
       },
+      order: [
+        ['id', 'desc'],
+      ],
     });
     fields = _.get(fields, 'fields');
     fields = utils.safeParseJson(fields, []);
@@ -67,14 +70,20 @@ module.exports = function(options = {}) {
       fields,
       data,
     });
-  });
+  };
 
-  routerCustomFields.post([`/save/:key/:id`, '/save/:key/:id1/:id2'], async (ctx) => {
-    const { key = '', id = '', id1 = null, id2 = null } = ctx.params;
+  const routeCustomFieldsSave = async (ctx) => {
+    console.log({ params: ctx.params });
+    let { key = '', id = '', id1 = null, id2 = null } = ctx.params;
+    if (!id && id1) {
+      id = id1;
+    }
     if (!id && id1 && id2) { id = `${id1}/${id2}`; }
 
     const body = ctx.request.body;
     if (!id) throw new Error(`${errorPrefixFrontEnd} 请输入正确的数据ID`);
+
+    console.log({ modelName, id });
 
     const [item] = await CustomFieldsData.findOrCreate({
       where: {
@@ -97,6 +106,19 @@ module.exports = function(options = {}) {
     });
 
     ctx.jsonOk();
+  };
+
+  routerCustomFields.post([`/:key/:id`, `/:key/:id1/:id2`, '/:key/:id1/:id2/:id3'], async(ctx) => {
+    const { key, id1, id2, id3 } = ctx.params;
+    if (key === 'save') {
+      ctx.params = {
+        key: id1,
+        id1: id2,
+        id2: id3,
+      };
+      await routeCustomFieldsSave(ctx); return;
+    }
+    await routeCustomFields(ctx);
   });
 
   // todo delete data

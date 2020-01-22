@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export default {
   props: {
     moduleName: { type: String, default: '模块' },
@@ -5,6 +7,7 @@ export default {
     model: { type: String, default: 'data' },
     pageTitle: { type: String, default: '欢迎' },
     id: { type: [Number, String], default: '' },
+    backUrl: { type: String, default: '' },
   },
   data() {
     return {
@@ -30,7 +33,7 @@ export default {
     async handleDelete() {
       const { id } = this;
       const res = await this.withLoading(this.api(`/api/${this.model}/delete/${id}`));
-      if (!(res && res.code === 0)) {
+      if (res === null) {
         this.$message({
           type: 'error',
           message: res.message,
@@ -41,7 +44,7 @@ export default {
         type: 'success',
         message: '删除成功',
       });
-      this.$router.push(`${this.moduleUrl}/`);
+      this.$router.push(this.backUrl || _.get(this.$route.query, 'backUrl') || `${this.moduleUrl}/`);
     },
   },
 };

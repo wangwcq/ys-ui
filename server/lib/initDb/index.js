@@ -16,28 +16,32 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
     username = 'root',
     password = '',
     database = '',
+    debug = false,
   } = dbConfig;
   const {
     models: vModels,
     associations = [],
   } = dbDefinition;
 
+  const options = {
+    host,
+    port,
+    dialect: 'mysql',
+    timezone: '+08:00',
+    define: {
+      hooks: {
+        beforeValidate: () => db.query('SET autocommit = 1'),
+      },
+    },
+  };
+  if (!debug) {
+    _.set(options, 'logging', () => {});
+  }
   const db = new Sequelize(
     database,
     username,
     password,
-    {
-      host,
-      port,
-      dialect: 'mysql',
-      timezone: 'Asia/Shanghai', // todo fixme
-      define: {
-        hooks: {
-          beforeValidate: () => db.query('SET autocommit = 1'),
-        },
-      },
-      logging: () => {},
-    },
+    options,
   );
 
   const models = {};

@@ -25,6 +25,7 @@ module.exports = async (seedData = {}, options = {}) => {
         },
       });
     }, consts.parallelSize);
+    console.log('Seed data updated!');
   } catch (e) {
     console.error(e);
   }

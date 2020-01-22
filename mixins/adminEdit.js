@@ -137,12 +137,15 @@ mixin.sublist = (options = {}, custom = {}) => {
     hiddenColumns = [],
     disableEditLink = false,
     expandable = true,
+    createParams = {},
+    editIdField = 'id',
   } = options;
   return _.merge({}, {
     url: `/api/${model}/sub-list/${targetModel}/${id}`,
     model: targetModel,
     moduleUrl: `/${targetModel}`,
     editWith: ComponentEditWith,
+    editIdField,
     createWith: {
       component: ComponentEditWith,
       dataDefault: {
@@ -151,6 +154,7 @@ mixin.sublist = (options = {}, custom = {}) => {
       lockedFields,
       model: targetModel,
       moduleUrl: `/${targetModel}`,
+      createParams,
       buttonText,
     },
     noCreate,

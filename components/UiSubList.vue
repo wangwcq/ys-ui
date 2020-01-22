@@ -15,7 +15,7 @@
     <template slot="column__expand" slot-scope="{ row }">
       <component
           :is="editWith"
-          :id="row.id"
+          :id="row[editIdField]"
           :model="model"
           :module-url="moduleUrl"
           :after-submit="() => { fetchData(); }"
@@ -57,6 +57,7 @@
     name: "UiSubList",
     mixins: [adminList],
     props: {
+      editIdField: { type: String, default: 'id' },
       editWith: { type: Object, default: () => ({}) },
       createWith: { type: Object, default: null },
       defaultExpandAll: { type: Boolean, default: false },
