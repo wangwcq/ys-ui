@@ -16,6 +16,18 @@
       <ui-tag>{{body}}</ui-tag>
     </template>
 
+    <template v-else-if="type === 'tags' && body && body.length">
+      <ui-tag
+          v-for="item in body"
+          :key="item"
+          class="mr"
+      >{{ item }}</ui-tag>
+    </template>
+
+    <template v-else-if="type === 'tags' && body">
+      -
+    </template>
+
     <small v-else-if="type === 'datetime'">
       {{formatMoment(body)}}
     </small>

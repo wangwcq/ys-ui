@@ -31,6 +31,7 @@
         <ui-dialog
             :title="createWith.buttonText || '添加绑定'"
             :visible.sync="dialogCreateVisible"
+            v-if="dialogCreateVisible"
             append-to-body
             width="80%"
         >

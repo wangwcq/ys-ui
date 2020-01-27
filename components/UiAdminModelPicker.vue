@@ -86,6 +86,11 @@
         displayValue: '',
       };
     },
+    watch: {
+      value() {
+        this.updateDisplayValue();
+      },
+    },
     mounted() {
       this.fetchData();
     },
@@ -121,6 +126,11 @@
           },
           ...attributes,
         ];
+      },
+      updateDisplayValue() {
+        const list = this.options;
+        const selectedOption = _.find(list, item => item.value == this.value);
+        this.displayValue = _.get(selectedOption, 'label', '-');
       },
     },
   }

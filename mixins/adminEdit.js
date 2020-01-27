@@ -1,15 +1,49 @@
 import _ from 'lodash';
+import { MessageBox } from 'element-ui';
 
 const mixin = {
   props: {
     moduleUrl: { type: String, default: '/' },
     model: { type: String, default: 'data' },
-    id: { type: [Number, String], default: '' },
+    vId: { type: [Number, String], default: '' },
+    idA: { type: [Number, String], default: '' },
+    idB: { type: [Number, String], default: '' },
     dataDefault: { type: Object, default: () => ({}) },
     afterSubmit: {
       type: Function,
-      default: function() {
-        this.$router.push(`${this.moduleUrl}/`);
+      default: function(res) {
+        let isDecided = false;
+        const defaultBehavior = () => {
+          this.$router.push(`${this.moduleUrl}/`);
+        };
+
+        this.$confirm('请选择下一步操作(3秒后自动返回列表)', '已保存', {
+          confirmButtonText: '返回列表',
+          cancelButtonText: '继续编辑',
+          type: 'success',
+          showCancelButton: Boolean(res.id),
+        }).then(() => {
+          if (isDecided) return;
+          isDecided = true;
+          defaultBehavior();
+        }).catch(() => {
+          if (isDecided) return;
+          isDecided = true;
+          if (this.id) {
+            this.fetchData(res.id);
+          } else if (res.id) {
+            this.$router.push(`${this.moduleUrl}/edit/${res.id}`);
+          } else {
+            defaultBehavior();
+          }
+        });
+
+        setTimeout(() => {
+          if (isDecided) return;
+          isDecided = true;
+          MessageBox.close();
+          defaultBehavior();
+        }, 3000);
       },
     },
     lockedFields: { type: Array, default: () => [] },
@@ -27,15 +61,24 @@ const mixin = {
       customFieldsData: null,
       subLists: {},
       tab: 'main',
+      withCustomFields: true,
     };
+  },
+  computed: {
+    id() {
+      if (this.vId) return this.vId;
+      if (this.$attrs.id) return this.$attrs.id;
+      if (this.idA && this.idB) { return [this.idA, this.idB].join('/'); }
+      return '';
+    },
   },
   mounted() {
     this.fetchData();
-    this.fetchCustomFields();
+    this.withCustomFields && this.fetchCustomFields();
   },
   methods: {
-    async fetchData() {
-      const { id } = this;
+    async fetchData(vId) {
+      const id = vId || this.id;
       const {
         attributes = [],
         item = {},
@@ -73,7 +116,7 @@ const mixin = {
           type: 'success',
           message: '保存成功',
         });
-        this.afterSubmit();
+        this.afterSubmit(saveRes);
         this.$emit('after-submit');
       }
     },

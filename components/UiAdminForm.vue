@@ -20,13 +20,23 @@
               <ui-form-item
                   :label="`${field.title}：`"
               >
-                <ui-type-edit
+                <slot
+                    :name="`field__${field.name}`"
                     :type="field.type"
-                    v-model="model[field.name]"
-                    @input="handleFieldChange"
+                    :value="model[field.name]"
+                    :onInput="value => model[field.name] = value"
+                    :afterInput="handleFieldChange"
                     :config="field"
                     :readonly="readonly"
-                />
+                >
+                  <ui-type-edit
+                      :type="field.type"
+                      v-model="model[field.name]"
+                      @input="handleFieldChange"
+                      :config="field"
+                      :readonly="readonly"
+                  />
+                </slot>
               </ui-form-item>
             </template>
           </ui-flex>

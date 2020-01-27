@@ -19,6 +19,8 @@ module.exports = (options = {}) => {
     association = '',
     associationInclude = [],
     targetModel = null,
+    attributes = null,
+    parseList = (x => x),
   } = options;
 
   if (!router) throw new Error('use-sub-list: Please input router!');
@@ -36,8 +38,8 @@ module.exports = (options = {}) => {
       ],
     });
     ctx.jsonOk({
-      attributes: targetModel.crud.listAttributes,
-      list: utils.ensureArray(res[association]),
+      attributes: attributes || targetModel.crud.listAttributes,
+      list: parseList(utils.ensureArray(res[association])),
     });
   });
 

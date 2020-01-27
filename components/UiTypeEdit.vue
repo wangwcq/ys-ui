@@ -72,6 +72,17 @@
       />
     </template>
 
+    <template v-else-if="type === 'tags'">
+      <ui-select
+          :value="value"
+          @input="onInput"
+          multiple
+          filterable
+          allow-create
+          class="w-full"
+      ></ui-select>
+    </template>
+
     <template v-else>
       <ui-input :value="value" @input="onInput" autocomplete="off" />
     </template>

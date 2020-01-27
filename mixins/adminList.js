@@ -15,6 +15,7 @@ export default {
       data: null,
       attributes: null,
       tab: 'main',
+      defaultFetchData: true,
     };
   },
   computed: {
@@ -25,7 +26,7 @@ export default {
     },
   },
   mounted() {
-    this.fetchData();
+    this.defaultFetchData && this.fetchData();
   },
   methods: {
     async fetchData() {
