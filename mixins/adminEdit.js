@@ -21,7 +21,7 @@ const mixin = {
           confirmButtonText: '返回列表',
           cancelButtonText: '继续编辑',
           type: 'success',
-          showCancelButton: Boolean(res.id),
+          showCancelButton: Boolean(_.get(res, 'id')),
         }).then(() => {
           if (isDecided) return;
           isDecided = true;
@@ -55,6 +55,7 @@ const mixin = {
   emits: ['after-submit'],
   data() {
     return {
+      id: this.getId(),
       attributes: [],
       data: null,
       customFields: null,
@@ -64,19 +65,17 @@ const mixin = {
       withCustomFields: true,
     };
   },
-  computed: {
-    id() {
-      if (this.vId) return this.vId;
-      if (this.$attrs.id) return this.$attrs.id;
-      if (this.idA && this.idB) { return [this.idA, this.idB].join('/'); }
-      return '';
-    },
-  },
   mounted() {
     this.fetchData();
     this.withCustomFields && this.fetchCustomFields();
   },
   methods: {
+    getId() {
+      if (this.vId) return this.vId;
+      if (this.$attrs.id) return this.$attrs.id;
+      if (this.idA && this.idB) { return [this.idA, this.idB].join('/'); }
+      return '';
+    },
     async fetchData(vId) {
       const id = vId || this.id;
       const {
