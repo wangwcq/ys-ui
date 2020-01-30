@@ -19,10 +19,10 @@
           :model="model"
           :module-url="moduleUrl"
           :after-submit="() => { fetchData(); }"
-          readonly
-          compact
+          :readonly="readonly"
+          :compact="compact"
           :disableEditLink="disableEditLink"
-          compactTabs
+          :compactTabs="compactTabs"
       />
     </template>
     <slot slot="table-end" name="table-end">
@@ -66,6 +66,9 @@
       noCreate: { type: Boolean, default: false },
       disableEditLink: { type: Boolean, default: false },
       expandable: { type: Boolean, default: true },
+      readonly: { type: Boolean, default: true },
+      compact: { type: Boolean, default: true },
+      compactTabs: { type: Boolean, default: true },
     },
     data() {
       return {

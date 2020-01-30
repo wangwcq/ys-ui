@@ -91,6 +91,7 @@ const getFormAttributes = (vFields) => {
       type = 'model';
     }
     if (field.readonly) { type = `readonly__${type}`; }
+    if (field.ignored) { type = 'hidden'; }
     const title = field.title || _.upperFirst(_.startCase(fieldName));
 
     return {
@@ -130,14 +131,14 @@ ex.buildCrudUtils = (model, models) => {
   model.crud = {};
   model.crud.listAttributes = getListAttributes(fields);
   model.crud.formAttributes = getFormAttributes(fields);
-  model.crud.newItem = (ctx) => {
+  model.crud.newItem = (ctx = {}, defaultData = {}) => {
     let item = {};
     if (fields._newItem) {
       item = fields._newItem(ctx);
     } else {
       item = createNewItemByFields(model.crud.formAttributes);
     }
-    return _.extend(item, { ..._.get(ctx, 'request.body') });
+    return _.extend({}, item, defaultData, { ..._.get(ctx, 'request.body') });
   };
   model.crud.listAll = async function (options = {}) {
     const { where = {} } = options;
@@ -181,7 +182,7 @@ ex.buildCrudUtils = (model, models) => {
     console.log({ data, id, fields: model.crud.formAttributes, pk: model.primaryKeyAttributes });
     const saveData = { ...data };
     _.forEach(model.crud.formAttributes, field => {
-      if (field.name === 'id' && field.ignored) {
+      if (field.ignored) {
         delete saveData[field.name];
       }
       if (field.model && !saveData[field.name]) {

@@ -21,7 +21,7 @@ const mixin = {
           confirmButtonText: '返回列表',
           cancelButtonText: '继续编辑',
           type: 'success',
-          showCancelButton: Boolean(_.get(res, 'id')),
+          showCancelButton: Boolean(this.id || _.get(res, 'id')),
         }).then(() => {
           if (isDecided) return;
           isDecided = true;
@@ -116,9 +116,11 @@ const mixin = {
           message: '保存成功',
         });
         this.afterSubmit(saveRes);
+        this.vAfterSubmit(saveRes);
         this.$emit('after-submit');
       }
     },
+    vAfterSubmit() {},
     async fetchCustomFields(options = {}) {
       const {
         customFieldsKey = this.model,

@@ -98,6 +98,7 @@
       compact: { type: Boolean, default: false },
       disableEditLink: { type: Boolean, default: false },
     },
+    emits: ['change'],
     data() {
       return {
         isDirty: false,
@@ -110,6 +111,7 @@
     },
     methods: {
       handleFieldChange() {
+        this.$emit('change');
         this.isDirty = true;
       },
     },
