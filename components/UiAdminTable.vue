@@ -1,19 +1,24 @@
 <template>
   <div class="ui-admin-table">
-    <div class="ui-admin-table__toolbar">
-      <component
-          :is="vLinkCreate ? 'router-link' : 'a'"
-          v-if="withCreate && positionCreate === 'toolbar'"
-          :to="vLinkCreate"
-          :target="createTarget"
-          @click="handleCreate || (() => {})"
-      >
-        <ui-button size="small" type="primary" icon="el-icon-edit">创建</ui-button>
-      </component>
-      <ui-button v-if="withRefresh && positionCreate === 'toolbar'" size="small" icon="el-icon-refresh" @click="() => $emit('refresh')" class="ml">刷新</ui-button>
-    </div>
+    <ui-flex row class="ui-admin-table__toolbar">
+      <ui-flex>
+        <component
+            :is="vLinkCreate ? 'router-link' : 'a'"
+            v-if="withCreate && positionCreate === 'toolbar'"
+            :to="vLinkCreate"
+            :target="createTarget"
+            @click="handleCreate || (() => {})"
+        >
+          <ui-button size="small" type="primary" icon="el-icon-edit">创建</ui-button>
+        </component>
+        <ui-button v-if="withRefresh && positionCreate === 'toolbar'" size="small" icon="el-icon-refresh" @click="() => $emit('refresh')" class="ml">刷新</ui-button>
+      </ui-flex>
+      <ui-flex zero v-if="withSearch">
+        <ui-input clearable v-model="searchKeyword" placeholder="输入关键词搜索" />
+      </ui-flex>
+    </ui-flex>
     <ui-table
-        :data="data"
+        :data="filteredData"
         :default-expand-all="defaultExpandAll"
         :show-header="showHeader"
     >
@@ -105,6 +110,8 @@
 <script>
   import _ from 'lodash';
   import UiTypeDisplay from "./UiTypeDisplay";
+  import {containsText, flattenedValues} from "../index";
+
   export default {
     name: "UiAdminTable",
     components: {UiTypeDisplay},
@@ -116,6 +123,7 @@
       createTarget: { type: String, default: '' },
       withActions: { type: Boolean, default: true },
       withRefresh: { type: Boolean, default: false },
+      withSearch: { type: Boolean, default: true },
       positionCreate: { type: String, default: 'toolbar' }, // toolbar, end
       expandable: { type: Boolean, default: false },
       defaultExpandAll: { type: Boolean, default: false },
@@ -124,6 +132,11 @@
       showHeader: { type: Boolean, default: true },
     },
     emits: ['refresh'],
+    data() {
+      return {
+        searchKeyword: '',
+      };
+    },
     computed: {
       columns() {
         const cols = [
@@ -148,6 +161,11 @@
           return this.linkCreate;
         }
         return `${this.moduleUrl}/add`;
+      },
+      filteredData() {
+        return _.filter(this.data, row => {
+          return containsText(flattenedValues(row).join(' '), this.searchKeyword);
+        });
       },
     },
   }
