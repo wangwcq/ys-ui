@@ -1,3 +1,6 @@
+const numeral = require('numeral');
+const moment = require('moment');
+
 const _ = require('lodash');
 const md5 = require('md5');
 
@@ -47,4 +50,17 @@ ex.encodePassword = (password, method = 'md5') => {
     ret = md5(password);
   }
   return ret;
+};
+
+ex.formatPrice = (value, format = '0,0.00') => numeral(value).format(format);
+
+ex.formatDateTime = (value, format = 'YYYY-MM-DD HH:mm:ss') => moment(value).format(format);
+
+ex.containsText = (text, keyword) => {
+  return String(text).toLowerCase().indexOf(String(keyword).toLowerCase()) !== -1;
+};
+
+ex.flattenedValues = (obj) => {
+  if (typeof obj !== "object") { return obj; }
+  return _.flattenDeep(_.map(obj, item => flattenedValues(item)));
 };
