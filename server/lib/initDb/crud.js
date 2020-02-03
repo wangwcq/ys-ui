@@ -143,11 +143,14 @@ ex.buildCrudUtils = (model, models) => {
   model.crud.listAll = async function (options = {}) {
     const { where = {} } = options;
 
+    const attributes = _.map(model.crud.listAttributes, attribute => attribute.name);
+
     const res = await model.findAll({
       where,
       order: [
         ['id', 'desc'],
       ],
+      attributes,
       include: _.map(_.filter(model.crud.listAttributes, attribute => attribute.model), (field) => {
         const { model: association } = field;
         return {
