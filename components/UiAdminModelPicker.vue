@@ -11,7 +11,14 @@
         <template
             v-if="disabled"
         >
-          {{ displayValue || '...' }}
+          <router-link
+              :to="`/${config.model.appData.apiName}/edit/${this.value}`"
+              target="_blank"
+          >
+            <ui-link>
+              {{ displayValue || '...' }}
+            </ui-link>
+          </router-link>
         </template>
         <ui-select
             v-else
