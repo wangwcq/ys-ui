@@ -21,6 +21,7 @@
         :data="filteredData"
         :default-expand-all="defaultExpandAll"
         :show-header="showHeader"
+        :max-height="maxHeight"
     >
       <ui-table-column v-if="expandable" type="expand">
         <template slot-scope="scope">
@@ -130,6 +131,7 @@
       linkCreate: { type: String, default: undefined },
       handleCreate: { type: Function, default: null },
       showHeader: { type: Boolean, default: true },
+      maxHeight: { type: [String, Number] },
     },
     emits: ['refresh'],
     data() {
