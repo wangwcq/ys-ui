@@ -82,6 +82,7 @@
       value: {},
       config: { type: Object, default: () => ({}) },
       disabled: { type: Boolean, default: false },
+      url: { type: String },
     },
     emits: ['input'],
     data() {
@@ -110,7 +111,7 @@
         this.dialogTableVisible = false;
       },
       async fetchData() {
-        let { attributes, list } = await this.withLoading(this.api(`/api/${_.kebabCase(this.config.model.appData.apiName)}/list`))
+        let { attributes, list } = await this.withLoading(this.api(this.url || `/api/${_.kebabCase(this.config.model.appData.apiName)}/list`))
         this.tableData = [...list];
         list = _.map(list, item => {
           let label = _.map(this.config.model.titleFields, titleField => {
