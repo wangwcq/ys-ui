@@ -43,6 +43,7 @@
         :title="`选择${config.title}`"
         :visible.sync="dialogTableVisible"
         append-to-body
+        width="80%"
     >
       <ui-admin-table
           :attributes="tableAttributes"
@@ -53,6 +54,7 @@
           create-target="_blank"
           with-refresh
           @refresh="fetchData"
+          max-height="600"
       >
         <template slot="column__select" slot-scope="{ row }">
           <ui-radio
