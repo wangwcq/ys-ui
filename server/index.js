@@ -21,6 +21,13 @@ const useComments = require('./lib/useComments/index');
 
 const utils = require('./lib/utils');
 
+/**
+ * @typedef {Object} ServerConfig
+ * @property {Function} [routers = () => {}]
+ *
+ * @param {ServerConfig} config
+ * @returns {Promise<void>}
+ */
 const main = async (config = {}) => {
   const {
     routers = () => {},
