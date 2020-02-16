@@ -9,6 +9,7 @@ export default {
           method = 'POST',
           error,
           defaultValue = null,
+          withMessage = true,
         } = config;
         let res = null;
         try {
@@ -23,7 +24,9 @@ export default {
           if (res.code !== 0) throw new Error(res.message);
           return res.data;
         } catch(e) {
-          this.$message({ message: e.message, type: "error" });
+          if (withMessage) {
+            this.$message({ message: e.message, type: "error" });
+          }
           if (_.isFunction(error)) {
             await error(e);
           }
