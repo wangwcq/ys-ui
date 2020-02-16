@@ -11,7 +11,9 @@ export default {
   },
   methods: {
     async checkLoggedIn() {
-      const res = await this.withLoading(this.api('/api/whoami'));
+      const res = await this.withLoading(this.api('/api/whoami', {}, {
+        withMessage: false,
+      }));
       if (!res) {
         this.$router.replace('/admin/login');
         return;
