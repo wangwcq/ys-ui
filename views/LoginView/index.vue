@@ -41,12 +41,12 @@
         <div>
           <slot name="copyright">
             <div>
-              &copy;Copyright 2019 WANLYAN All rights reserved.
+              &copy;Copyright {{ year }} {{ owner }} All rights reserved.
             </div>
           </slot>
           <slot name="powered-by">
             <div>
-              技术支持：上海熠世信息技术有限公司
+              {{ powerBy }}
             </div>
           </slot>
         </div>
@@ -56,6 +56,8 @@
 </template>
 
 <script>
+  import moment from 'moment';
+
   export default {
     name: "Login",
     props: {
@@ -64,6 +66,9 @@
     },
     data() {
       return {
+        year: moment().format('YYYY'),
+        owner: this.$getComponentConfig('common', 'owner'),
+        powerBy: this.$getComponentConfig('common', 'powerBy'),
         login: {
           username: '',
           password: '',

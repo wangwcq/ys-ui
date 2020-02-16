@@ -18,7 +18,7 @@
       </ui-flex>
     </ui-flex>
     <ui-table
-        :data="filteredData"
+        :data="pagedData"
         :default-expand-all="defaultExpandAll"
         :show-header="showHeader"
         :max-height="maxHeight"
@@ -63,7 +63,10 @@
                   <router-link :to="`${moduleUrl}/edit/${scope.row.id}`">
                     <ui-button size="mini" type="primary" icon="el-icon-edit">编辑</ui-button>
                   </router-link>
-                  <router-link :to="`${moduleUrl}/delete/${scope.row.id}?backUrl=${encodeURIComponent($route.fullPath)}`">
+                  <router-link
+                      :to="`${moduleUrl}/delete/${scope.row.id}?backUrl=${encodeURIComponent($route.fullPath)}`"
+                      v-if="withDelete"
+                  >
                     <ui-button size="mini" type="info" icon="el-icon-delete">删除</ui-button>
                   </router-link>
                 </ui-button-group>
@@ -85,6 +88,17 @@
         </ui-table-column>
       </template>
     </ui-table>
+    <ui-flex row center class="mt" v-if="paginationMethod">
+      <ui-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-sizes="[10,20,50,100]"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="totalItems"
+      />
+    </ui-flex>
     <div class="ui-admin-table__end">
       <slot name="table-end"></slot>
       <ui-flex row>
@@ -123,6 +137,7 @@
       withCreate: { type: Boolean, default: true },
       createTarget: { type: String, default: '' },
       withActions: { type: Boolean, default: true },
+      withDelete: { type: Boolean, default: true },
       withRefresh: { type: Boolean, default: false },
       withSearch: { type: Boolean, default: true },
       positionCreate: { type: String, default: 'toolbar' }, // toolbar, end
@@ -132,11 +147,15 @@
       handleCreate: { type: Function, default: null },
       showHeader: { type: Boolean, default: true },
       maxHeight: { type: [String, Number] },
+      paginationMethod: { type: String, default: undefined },
     },
     emits: ['refresh'],
     data() {
+      const pageSize = 10;
       return {
         searchKeyword: '',
+        currentPage: 1,
+        pageSize,
       };
     },
     computed: {
@@ -168,6 +187,34 @@
         return _.filter(this.data, row => {
           return containsText(flattenedValues(row).join(' '), this.searchKeyword);
         });
+      },
+      pagedData() {
+        let start = 0;
+        let end = this.filteredData.length;
+        if (this.paginationMethod === 'front-end') {
+          start = (this.currentPage - 1) * this.pageSize;
+          end = start + this.pageSize;
+        }
+        return _.slice(this.filteredData, start, end);
+      },
+      totalItems() {
+        return this.filteredData.length;
+      },
+    },
+    watch: {
+      data() {
+        this.currentPage = 1;
+      },
+      searchKeyword() {
+        this.currentPage = 1;
+      },
+    },
+    methods: {
+      handleSizeChange(pageSize) {
+        this.pageSize = pageSize;
+      },
+      handleCurrentChange(currentPage) {
+        this.currentPage = currentPage;
       },
     },
   }

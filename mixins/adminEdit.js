@@ -109,7 +109,8 @@ const mixin = {
     },
     async handleSubmit() {
       const { id } = this;
-      const saveRes = await this.withLoading(this.api(`/api/${this.model}/save/${id || ''}`, this.data));
+      const data = this.beforeHandleSubmit(this.data);
+      const saveRes = await this.withLoading(this.api(`/api/${this.model}/save/${id || ''}`, data));
       if (saveRes !== null) {
         this.$message({
           type: 'success',
@@ -138,6 +139,7 @@ const mixin = {
         this[vCustomFieldsDataKey] = data;
       }
     },
+    beforeHandleSubmit(data) { return data; },
   },
 };
 

@@ -1,4 +1,4 @@
-const { main, Logger } = require('@ys/ys-ui/server');
+const { main, Logger } = require('@yishitec/web/server');
 
 main({
   appName: 'WANLYAN ERP',

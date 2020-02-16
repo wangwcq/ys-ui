@@ -12,7 +12,7 @@
             v-if="disabled"
         >
           <router-link
-              :to="`/${config.model.appData.apiName}/edit/${this.value}`"
+              :to="`${$getComponentConfig('common', 'moduleUrlBase')}/${config.model.appData.apiName}/edit/${this.value}`"
               target="_blank"
           >
             <ui-link>
@@ -113,7 +113,7 @@
         this.dialogTableVisible = false;
       },
       async fetchData() {
-        let { attributes, list } = await this.withLoading(this.api(this.url || `/api/${_.kebabCase(this.config.model.appData.apiName)}/list`))
+        let { attributes, list } = await this.withLoading(this.api(this.url || this.$getComponentConfig('adminModelPicker', 'getApi')(this.config.model.appData.apiName)));
         this.tableData = [...list];
         list = _.map(list, item => {
           let label = _.map(this.config.model.titleFields, titleField => {

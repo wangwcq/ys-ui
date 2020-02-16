@@ -31,7 +31,7 @@
       },
     },
     mounted() {
-      document.title = `${this.pageTitle} - WANLYAN APP`;
+      document.title = `${this.pageTitle} - ${this.$getComponentConfig('common', 'appName')}`;
     },
   }
 </script>

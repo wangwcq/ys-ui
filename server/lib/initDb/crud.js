@@ -25,11 +25,17 @@ const dbCommonFields = [
 
 const getListAttributes = (vFields) => {
   let hideId = false;
+  let timestamps = true;
   let fields = _.map(vFields, (field, fieldName) => {
     if (_.startsWith(fieldName, '__')) {
       fieldName = fieldName.replace('__', '');
     }
-    else if (_.startsWith(fieldName, '_')) return null;
+    else if (_.startsWith(fieldName, '_')) {
+      if (fieldName === '_timestamps') {
+        timestamps = field;
+      }
+      return null;
+    }
     const type = utils.getListFieldType(field.type);
     if (type === 'password') return null;
     const title = field.title || _.upperFirst(_.startCase(fieldName));
@@ -71,18 +77,24 @@ const getListAttributes = (vFields) => {
       width: 80,
     }],
     ...fields,
-    ...dbCommonFields,
+    ...(timestamps ? dbCommonFields : []),
   ];
   return fields;
 };
 
 const getFormAttributes = (vFields) => {
   let isIdPreDefined = false;
+  let timestamps = true;
   let fields = _.map(vFields, (field, fieldName) => {
     if (_.startsWith(fieldName, '__')) {
       fieldName = fieldName.replace('__', '');
     }
-    if (_.startsWith(fieldName, '_')) return null;
+    if (_.startsWith(fieldName, '_'))  {
+      if (fieldName === '_timestamps') {
+        timestamps = field;
+      }
+      return null;
+    }
     if (fieldName === 'id') {
       isIdPreDefined = true;
     }
@@ -110,10 +122,10 @@ const getFormAttributes = (vFields) => {
       width: 80,
     }],
     ...fields,
-    ..._.merge([], dbCommonFields, [
+    ...(timestamps ? _.merge([], dbCommonFields, [
       { type: 'readonly__datetime' },
       { type: 'readonly__datetime' },
-    ]),
+    ]) : []),
   ];
   return fields;
 };
@@ -181,11 +193,10 @@ ex.buildCrudUtils = (model, models) => {
     });
     return item;
   };
-  model.crud.saveItem = async function (data, id) {
-    console.log({ data, id, fields: model.crud.formAttributes, pk: model.primaryKeyAttributes });
+  model.crud.saveItem = async function (data, id, respectIgnore = true) {
     const saveData = { ...data };
     _.forEach(model.crud.formAttributes, field => {
-      if (field.ignored) {
+      if (field.ignored && respectIgnore) {
         delete saveData[field.name];
       }
       if (field.model && !saveData[field.name]) {
@@ -197,7 +208,6 @@ ex.buildCrudUtils = (model, models) => {
     _.forEach(model.primaryKeyAttributes, field => {
       where[field] = _.get(data, field, null);
     });
-    console.log({ where, saveData });
     const [item] = await model.findOrCreate({
       where,
       defaults: saveData,

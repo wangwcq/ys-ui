@@ -18,17 +18,28 @@ Vue.use(Router);
 
 const _ = lodash;
 
-function main(params = {}) {
+/**
+ * @typedef {Object} RouteItem
+ * @property {string} path
+ * @property {string} name
+ * @property {Object} component
+ * @property {RouteItem[]} children
+ */
 
+/**
+ * @param params
+ * @param {RouteItem[]} params.routes
+ * @param {ComponentsConfig} params.componentsConfig
+ * @param {Object} params.store
+ */
+function main(params = {}) {
   window._ = _;
   window.axios = axios;
 
-  initUiComponents();
+  initUiComponents(Vue, {
+    componentsConfig: params.componentsConfig || {},
+  });
   initUiMixins();
-
-  const {
-    routes = []
-  } = params;
 
   const router = new Router({
     mode: 'history',
@@ -37,7 +48,7 @@ function main(params = {}) {
       path: '/',
       component: App,
       children: [
-        ...routes,
+        ...(params.routes || []),
         {
           path: '*',
           name: 'Miss',
@@ -50,6 +61,7 @@ function main(params = {}) {
   new Vue({
     router,
     render: h => h(App),
+    store: params.store,
   }).$mount('#app');
 }
 

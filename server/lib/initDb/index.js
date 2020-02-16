@@ -17,6 +17,7 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
     password = '',
     database = '',
     debug = false,
+    constraints = true,
   } = dbConfig;
   const {
     models: vModels,
@@ -52,6 +53,8 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
     const model = x[modelName];
     let paranoid = true;
     let apiName = _.kebabCase(modelName);
+    let tableName = undefined;
+    let timestamps = true;
     const attributes = {};
 
     _.forEach(fields, (field, fieldName) => {
@@ -60,6 +63,8 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
       if (_.startsWith(fieldName, '_')) {
         if (fieldName === '_paranoid') paranoid = field;
         else if (fieldName === '_apiName') apiName = field;
+        else if (fieldName === '_tableName') tableName = field;
+        else if (fieldName === '_timestamps') timestamps = field;
         return true;
       }
       attributes[fieldName] = utils.getFieldType(field.type);
@@ -68,6 +73,8 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
     model.init(attributes, {
       sequelize: db,
       paranoid,
+      tableName,
+      timestamps,
     });
 
     fields._associations = [];
@@ -86,7 +93,7 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
   });
 
   _.forEach(associations, (exp) => {
-    createAssociation(exp, models);
+    createAssociation(exp, models, constraints);
   });
 
   _.forEach(models, (model, modelName) => {

@@ -1,6 +1,6 @@
 <template>
   <ui-date-picker
-      type="datetime"
+      :type="type"
       :picker-options="pickerOptions"
       v-bind="$attrs"
       v-on="$listeners"
@@ -13,6 +13,7 @@
   export default {
     name: "UiDatetimePicker",
     props: {
+      type: { type: String, default: 'datetime' },
       pickerOptions: {
         type: Object,
         default: () => ({

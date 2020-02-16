@@ -16,6 +16,7 @@ export default {
       attributes: null,
       tab: 'main',
       defaultFetchData: true,
+      apiBodyData: {},
     };
   },
   computed: {
@@ -30,7 +31,10 @@ export default {
   },
   methods: {
     async fetchData() {
-      const res = await this.withLoading(this.api(this.vApi, this.apiBody));
+      const res = await this.withLoading(this.api(this.vApi, {
+        ...this.apiBody,
+        ...this.apiBodyData,
+      }));
       if (!res) {
         this.$message({
           type: 'error',

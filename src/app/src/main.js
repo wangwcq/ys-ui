@@ -1,4 +1,4 @@
-import { main } from '@ys/ys-ui';
+import { main } from '@yishitec/web';
 
 main({
   // { path, name, component, children }

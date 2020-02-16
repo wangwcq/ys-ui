@@ -11,7 +11,7 @@ class ModelMissingError extends Error {
 
 const ex = {};
 
-ex.parseAssiociation = (str, models) => {
+ex.parseAssiociation = (str, models, constraints = true) => {
   if (str.indexOf('...') !== -1) {
     const [exp, joinModelName] = str.split('@');
     const [partA, partB] = exp.split('...');
@@ -85,12 +85,13 @@ ex.parseAssiociation = (str, models) => {
     A,
     B,
     foreignKey,
+    constraints,
   };
 };
 
-ex.createN1Association = ({ A, B, foreignKey }) => {
-  A.model[B.alias] = A.model.belongsTo(B.model, { as: B.alias, foreignKey });
-  B.model[A.alias] = B.model.hasMany(A.model, { as: A.alias, foreignKey });
+ex.createN1Association = ({ A, B, foreignKey, constraints }) => {
+  A.model[B.alias] = A.model.belongsTo(B.model, { as: B.alias, foreignKey, constraints });
+  B.model[A.alias] = B.model.hasMany(A.model, { as: A.alias, foreignKey, constraints });
 
   A.model.fieldsDefinition._associations.push({
     model: _.omit(B, 'model'),
@@ -101,13 +102,14 @@ ex.createN1Association = ({ A, B, foreignKey }) => {
   });
 };
 
-ex.createMnAssociation = ({ A, B, C }) => {
+ex.createMnAssociation = ({ A, B, C, constraints }) => {
   const bindModel = (M, N) => {
     M.model[N.alias] = M.model.belongsToMany(N.model, {
       as: N.alias,
       through: C.model,
       foreignKey: M.key,
       otherKey: N.key,
+      constraints,
     });
   };
   bindModel(A, B);
@@ -128,8 +130,8 @@ ex.createMnAssociation = ({ A, B, C }) => {
   });
 };
 
-ex.createAssociation = (exp, models) => {
-  const params = ex.parseAssiociation(exp, models);
+ex.createAssociation = (exp, models, constraints) => {
+  const params = ex.parseAssiociation(exp, models, constraints);
   if (params.type === 'n:1') ex.createN1Association(params);
   if (params.type === 'm:n') ex.createMnAssociation(params);
 };

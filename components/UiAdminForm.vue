@@ -13,7 +13,7 @@
         >
           <ui-flex
               v-if="field.type !== 'hidden'"
-              :style="`flex: 1 0 ${1 / cols * 100}%; padding: 0 ${gutter}px`"
+              :style="`flex: 1 0 ${1 / cols * 100}%; padding: 0 ${gutter}px; box-sizing: border-box`"
               :key="field.name"
           >
             <template>
@@ -24,7 +24,7 @@
                     :name="`field__${field.name}`"
                     :type="field.type"
                     :value="model[field.name]"
-                    :onInput="value => model[field.name] = value"
+                    :onInput="value => { model[field.name] = value; isDirty = true; }"
                     :afterInput="handleFieldChange"
                     :config="field"
                     :readonly="readonly"
@@ -98,7 +98,7 @@
       compact: { type: Boolean, default: false },
       disableEditLink: { type: Boolean, default: false },
     },
-    emits: ['change'],
+    emits: ['change', 'submit'],
     data() {
       return {
         isDirty: false,
