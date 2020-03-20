@@ -1,5 +1,6 @@
 const numeral = require('numeral');
 const moment = require('moment');
+const utilsRandom = require('./utils/random');
 
 const _ = require('lodash');
 const md5 = require('md5');
@@ -64,3 +65,5 @@ ex.flattenedValues = (obj) => {
   if (typeof obj !== "object") { return obj; }
   return _.flattenDeep(_.map(obj, item => flattenedValues(item)));
 };
+
+ex.random = utilsRandom;

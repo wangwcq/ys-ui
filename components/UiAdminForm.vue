@@ -19,6 +19,7 @@
             <template>
               <ui-form-item
                   :label="`${field.title}：`"
+                  :required="field.required"
               >
                 <slot
                     :name="`field__${field.name}`"

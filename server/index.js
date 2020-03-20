@@ -1,6 +1,7 @@
 const lodash = require('async-dash');
 const Sequelize = require('sequelize');
 const Koa = require('koa');
+const fs = require('fs-extra');
 const serve = require('koa-static');
 const KoaBody = require('koa-body');
 const libRequireDir = require('require-dir');
@@ -8,6 +9,7 @@ const paths = require('path');
 const proxy = require('koa-proxies');
 const Router = require('koa-router');
 const moment = require('moment');
+const multer = require('@koa/multer');
 const numeral = require('numeral');
 const axios = require('axios');
 
@@ -45,6 +47,33 @@ const main = async (config = {}) => {
   } = config;
   const app = new KoaApp(appConfig);
   await app.serverStartup();
+
+  await fs.ensureDir('files/files/');
+  const uploader = multer({
+    storage: multer.diskStorage({
+      destination: function (req, file, cb) {
+        cb(null, 'files/files/')
+      },
+      filename: function (req, file, cb) {
+        let ext;
+        ext = file.originalname;
+        ext = lodash.last(String(ext || '').split('/') || []) || '';
+        ext = lodash.last(String(ext || '').split('.') || []) || '';
+        if (ext) {
+          ext = `.${ext}`;
+        }
+        cb(null, file.fieldname + '-' + Date.now() + ext);
+      }
+    }),
+  });
+
+  app.router.post('/upload', uploader.single('file'), async (ctx) => {
+    ctx.jsonOk({
+      ...ctx.file,
+      url: `/files/${ctx.file.filename}`,
+    });
+  });
+
   routers(app.router);
 
   app.app.use(app.koaHistory);

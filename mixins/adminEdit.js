@@ -63,7 +63,14 @@ const mixin = {
       subLists: {},
       tab: 'main',
       withCustomFields: true,
+      dataReadonly: false,
+      vLockedFields: [],
     };
+  },
+  computed: {
+    vReadonly() {
+      return this.readonly || this.dataReadonly;
+    },
   },
   mounted() {
     this.fetchData();
@@ -78,13 +85,16 @@ const mixin = {
     },
     async fetchData(vId) {
       const id = vId || this.id;
+      const res = await this.withLoading(this.api(`/api/${this.model}/edit/${id || ''}`, { ..._.get(this.$route, 'query', {}) }));
       const {
         attributes = [],
         item = {},
-      } = await this.withLoading(this.api(`/api/${this.model}/edit/${id || ''}`, { ..._.get(this.$route, 'query', {}) }));
+        readonly = false,
+      } = res;
 
       const lockedFields = [
         ...this.lockedFields || [],
+        ...this.vLockedFields || [],
         ..._.keys(_.get(this.$route, 'query', {})),
       ];
       _.forEach(lockedFields, field => {
@@ -106,19 +116,34 @@ const mixin = {
           ...this.dataDefault,
         };
       }
+      if (readonly) this.dataReadonly = true;
+      await this.handleFetchDataRes(res);
+    },
+    async handleFetchDataRes(res) {
+      return res;
     },
     async handleSubmit() {
-      const { id } = this;
-      const data = this.beforeHandleSubmit(this.data);
-      const saveRes = await this.withLoading(this.api(`/api/${this.model}/save/${id || ''}`, data));
-      if (saveRes !== null) {
-        this.$message({
-          type: 'success',
-          message: '保存成功',
-        });
-        this.afterSubmit(saveRes);
-        this.vAfterSubmit(saveRes);
-        this.$emit('after-submit');
+      try {
+        const { id } = this;
+        const data = await this.beforeHandleSubmit(this.data);
+        const saveRes = await this.withLoading(this.api(`/api/${this.model}/save/${id || ''}`, data));
+        if (saveRes !== null) {
+          this.$message({
+            type: 'success',
+            message: '保存成功',
+          });
+          this.afterSubmit(saveRes);
+          this.vAfterSubmit(saveRes);
+          this.$emit('after-submit');
+        }
+      } catch(e) {
+        if (e.message) {
+          this.$message({
+            type: 'error',
+            message: e.message,
+          });
+        }
+        return;
       }
     },
     vAfterSubmit() {},
@@ -139,7 +164,7 @@ const mixin = {
         this[vCustomFieldsDataKey] = data;
       }
     },
-    beforeHandleSubmit(data) { return data; },
+    async beforeHandleSubmit(data) { return data; },
   },
 };
 

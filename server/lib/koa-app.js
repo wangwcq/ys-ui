@@ -85,8 +85,16 @@ class App {
       }, `Route Output ${ctx.requestUUID} ${ctx.req.url} +${time}ms ${requests} connections active`);
     });
 
-    app.use(koaBody());
-    app.use(koaSession({ key: config.appName }, app));
+    app.use(koaBody({
+      "formLimit":"50mb",
+      "jsonLimit":"50mb",
+      "textLimit":"50mb"
+    }));
+    app.use(koaSession({
+      key: config.appName,
+      rolling: true,
+      renew: true,
+    }, app));
     const router = new KoaRouter();
     router.prefix(config.apiBase);
     if (config.useHelloWorld) {

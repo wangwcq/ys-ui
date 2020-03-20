@@ -20,5 +20,11 @@
     overflow-x: auto;
     padding: 8px 8px 16px;
   }
+  .ui-stage {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: -8px;
+    margin-right: -8px;
+  }
 }
 </style>

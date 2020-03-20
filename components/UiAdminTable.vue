@@ -9,9 +9,10 @@
             :target="createTarget"
             @click="handleCreate || (() => {})"
         >
-          <ui-button size="small" type="primary" icon="el-icon-edit">创建</ui-button>
+          <ui-button size="small" type="primary" icon="el-icon-edit">{{ createButtonText }}</ui-button>
         </component>
         <ui-button v-if="withRefresh && positionCreate === 'toolbar'" size="small" icon="el-icon-refresh" @click="() => $emit('refresh')" class="ml">刷新</ui-button>
+        <slot name="toolbar"></slot>
       </ui-flex>
       <ui-flex zero v-if="withSearch">
         <ui-input clearable v-model="searchKeyword" placeholder="输入关键词搜索" />
@@ -22,6 +23,7 @@
         :default-expand-all="defaultExpandAll"
         :show-header="showHeader"
         :max-height="maxHeight"
+        :stripe="stripe"
     >
       <ui-table-column v-if="expandable" type="expand">
         <template slot-scope="scope">
@@ -136,6 +138,7 @@
       data: { type: Array, default: () => [] },
       withCreate: { type: Boolean, default: true },
       createTarget: { type: String, default: '' },
+      createButtonText: { type: String, default: '创建' },
       withActions: { type: Boolean, default: true },
       withDelete: { type: Boolean, default: true },
       withRefresh: { type: Boolean, default: false },
@@ -148,6 +151,7 @@
       showHeader: { type: Boolean, default: true },
       maxHeight: { type: [String, Number] },
       paginationMethod: { type: String, default: undefined },
+      stripe: { type: Boolean, default: false },
     },
     emits: ['refresh'],
     data() {
@@ -168,7 +172,7 @@
               name: '_adminActions',
               title: '操作',
               width: 180,
-              align: 'center',
+              align: 'left',
             },
           );
         }

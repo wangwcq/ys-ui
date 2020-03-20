@@ -142,6 +142,9 @@
         const selectedOption = _.find(list, item => item.value == this.value);
         this.displayValue = _.get(selectedOption, 'label', '-');
       },
+      $getComponentConfig(componentName, propName) {
+        return _.get(this.$componentsConfig, [componentName, propName]);
+      },
     },
   }
 </script>

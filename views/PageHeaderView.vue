@@ -31,7 +31,7 @@
       },
     },
     mounted() {
-      document.title = `${this.pageTitle} - ${this.$getComponentConfig('common', 'appName')}`;
+      document.title = `${this.pageTitle} - ${this.$getComponentConfig('common', 'appName') || _.get(window.G.appName)}`;
     },
   }
 </script>

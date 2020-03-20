@@ -1,6 +1,8 @@
 import _ from 'lodash';
 
-let globalData = {};
+let globalData = {
+  appName: '',
+};
 
 if (typeof window !== 'undefined') {
   if (window.G) { globalData = window.G; }
@@ -24,6 +26,10 @@ export default {
         }
         globalData[key] = value;
       };
+    },
+    documentTitle(title) {
+      const { appName } = globalData;
+      document.title = `${title} - ${appName}`;
     },
   },
 };
