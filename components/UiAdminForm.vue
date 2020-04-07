@@ -59,7 +59,7 @@
               :to="`${moduleUrl}/edit/${model.id || id}`"
               class="ml"
           >
-            <ui-button type="primary" icon="el-icon-delete">
+            <ui-button type="primary" icon="el-icon-edit">
               编辑
             </ui-button>
           </router-link>

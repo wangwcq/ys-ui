@@ -13,7 +13,7 @@
   export default {
     name: "UiDatetimePicker",
     props: {
-      type: { type: String, default: 'datetime' },
+      type: { type: String, default: 'datetime' }, // datetime, date
       pickerOptions: {
         type: Object,
         default: () => ({

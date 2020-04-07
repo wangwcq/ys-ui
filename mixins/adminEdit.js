@@ -92,6 +92,16 @@ const mixin = {
         readonly = false,
       } = res;
 
+      this.data = item;
+      if (!id) {
+        this.data = {
+          ...this.data,
+          ...this.dataDefault,
+        };
+      }
+      if (readonly) this.dataReadonly = true;
+      await this.handleFetchDataRes(res);
+
       const lockedFields = [
         ...this.lockedFields || [],
         ...this.vLockedFields || [],
@@ -109,15 +119,6 @@ const mixin = {
         return true;
       });
       this.attributes = attributes;
-      this.data = item;
-      if (!id) {
-        this.data = {
-          ...this.data,
-          ...this.dataDefault,
-        };
-      }
-      if (readonly) this.dataReadonly = true;
-      await this.handleFetchDataRes(res);
     },
     async handleFetchDataRes(res) {
       return res;

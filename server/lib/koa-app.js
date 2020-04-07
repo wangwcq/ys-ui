@@ -270,7 +270,7 @@ class App {
     app.use(router.middleware());
     swagger.add(app, config.apiBase);
 
-    app.listen(config.port);
+    app.listen(config.port, '0.0.0.0');
     console.log(chalk.bgBlue.black.bold(`${config.appName} Server started on port ${config.port}`));
   }
 }

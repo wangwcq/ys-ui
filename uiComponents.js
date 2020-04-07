@@ -66,6 +66,9 @@ export default (iVue, options = {}) => {
         return `/api/${_.kebabCase(apiName)}/list`;
       },
     },
+    adminTable: {
+      actionsColPosition: 'right',
+    },
   }, componentsConfig);
 
   Vue.mixin({

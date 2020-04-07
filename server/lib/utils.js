@@ -5,6 +5,10 @@ const utilsRandom = require('./utils/random');
 const _ = require('lodash');
 const md5 = require('md5');
 
+const errors = {
+  NOT_A_FUNCTION: 'Please input a function!',
+};
+
 const ex = {};
 module.exports = ex;
 
@@ -67,3 +71,14 @@ ex.flattenedValues = (obj) => {
 };
 
 ex.random = utilsRandom;
+
+ex.withTry = async (fn) => {
+  try {
+    if (!_.isFunction(fn)) throw new Error(errors.NOT_A_FUNCTION);
+    const res = await fn();
+    return res;
+  } catch(e) {
+    console.error(e);
+    return null;
+  }
+};

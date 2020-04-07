@@ -24,8 +24,12 @@
         :show-header="showHeader"
         :max-height="maxHeight"
         :stripe="stripe"
+        @filter-change="handleFilterChange"
     >
-      <ui-table-column v-if="expandable" type="expand">
+      <ui-table-column
+          v-if="expandable"
+          type="expand"
+      >
         <template slot-scope="scope">
           <slot
               name="column__expand"
@@ -45,12 +49,14 @@
       >
         <ui-table-column
             :key="col.name"
+            :column-key="col.name"
             v-if="col.type !== 'hidden'"
             :prop="col.name"
             :label="col.title"
             :width="col.width"
             :min-width="col.minWidth"
             :align="col.align"
+            :filters="col.filters"
         >
           <template slot-scope="scope">
             <slot
@@ -63,7 +69,8 @@
               >
                 <ui-button-group>
                   <router-link :to="`${moduleUrl}/edit/${scope.row.id}`">
-                    <ui-button size="mini" type="primary" icon="el-icon-edit">编辑</ui-button>
+                    <ui-button size="mini" type="primary" icon="el-icon-view" v-if="isEditView">查看</ui-button>
+                    <ui-button size="mini" type="primary" icon="el-icon-edit" v-else>编辑</ui-button>
                   </router-link>
                   <router-link
                       :to="`${moduleUrl}/delete/${scope.row.id}?backUrl=${encodeURIComponent($route.fullPath)}`"
@@ -90,12 +97,12 @@
         </ui-table-column>
       </template>
     </ui-table>
-    <ui-flex row center class="mt" v-if="paginationMethod">
+    <ui-flex row center class="mt" v-if="alwaysDisplayPagination || (paginationMethod && totalItems / pageSize > 1)">
       <ui-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="currentPage"
-          :page-sizes="[10,20,50,100]"
+          :page-sizes="[5, 10, 20, 50, 100]"
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="totalItems"
@@ -129,6 +136,8 @@
   import UiTypeDisplay from "./UiTypeDisplay";
   import {containsText, flattenedValues} from "../index";
 
+  const COMPONENT_CONFIG_KEY = 'adminTable';
+
   export default {
     name: "UiAdminTable",
     components: {UiTypeDisplay},
@@ -140,6 +149,11 @@
       createTarget: { type: String, default: '' },
       createButtonText: { type: String, default: '创建' },
       withActions: { type: Boolean, default: true },
+      actionsColPosition: {
+        type: String,
+        default: null,
+        validator: value => [null, 'right', 'left'].includes(value),
+      },
       withDelete: { type: Boolean, default: true },
       withRefresh: { type: Boolean, default: false },
       withSearch: { type: Boolean, default: true },
@@ -150,8 +164,10 @@
       handleCreate: { type: Function, default: null },
       showHeader: { type: Boolean, default: true },
       maxHeight: { type: [String, Number] },
-      paginationMethod: { type: String, default: undefined },
+      paginationMethod: { type: String, default: 'front-end' },
       stripe: { type: Boolean, default: false },
+      isEditView: { type: Boolean, default: true },
+      alwaysDisplayPagination: { type: Boolean, default: false },
     },
     emits: ['refresh'],
     data() {
@@ -160,14 +176,26 @@
         searchKeyword: '',
         currentPage: 1,
         pageSize,
+        columnFilters: {},
       };
     },
     computed: {
       columns() {
-        const cols = [
+        const cols = [];
+        const actionsColPosition = this.actionsColPosition || this.$getComponentConfig(COMPONENT_CONFIG_KEY, 'actionsColPosition');
+        if (this.withActions && actionsColPosition === 'left') {
+          cols.push({
+              name: '_adminActions',
+              title: '操作',
+              width: 180,
+              align: 'left',
+            },
+          );
+        }
+        cols.push(
           ...this.attributes,
-        ];
-        if (this.withActions) {
+        );
+        if (this.withActions && actionsColPosition === 'right') {
           cols.push({
               name: '_adminActions',
               title: '操作',
@@ -189,7 +217,24 @@
       },
       filteredData() {
         return _.filter(this.data, row => {
-          return containsText(flattenedValues(row).join(' '), this.searchKeyword);
+          let flag = true
+
+          if (this.searchKeyword && !containsText(flattenedValues(row).join(' '), this.searchKeyword)) {
+            return false;
+          }
+          _.forEach(this.columnFilters, (filterValues, filterColName) => {
+            console.log({ filterValues, filterColName });
+            if (filterValues.length) {
+              if (!filterValues.includes(row[filterColName])) {
+                flag = false;
+                return false;
+              }
+              return true;
+            }
+          });
+          if (!flag) return false;
+
+          return true;
         });
       },
       pagedData() {
@@ -219,6 +264,16 @@
       },
       handleCurrentChange(currentPage) {
         this.currentPage = currentPage;
+      },
+      handleFilterChange(ev) {
+        const columnKey = _.keys(ev)[0];
+        const eventOption = _.values(ev)[0];
+        const eventData = { col: _.find(this.attributes, compareCol => compareCol.name === columnKey), value: eventOption };
+        this.$emit('filter-change', eventData);
+        this.columnFilters = {
+          ...this.columnFilters,
+          ...ev,
+        };
       },
     },
   }
