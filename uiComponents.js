@@ -20,6 +20,7 @@ import UiDataSelect from './components/UiDataSelect';
 import UiLogo from './components/UiLogo';
 import UiWithErrorView from './components/UiWithErrorView';
 import UiChangePassword from './components/UiChangePassword';
+import UiSectionTitle from './components/UiSectionTitle';
 
 /**
  * @typedef {Object} ContainerConfig
@@ -99,4 +100,5 @@ export default (iVue, options = {}) => {
   Vue.component('ui-logo', UiLogo);
   Vue.component('ui-with-error-view', UiWithErrorView);
   Vue.component('ui-change-password', UiChangePassword);
+  Vue.component('ui-section-title', UiSectionTitle);
 };
