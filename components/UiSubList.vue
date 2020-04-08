@@ -5,7 +5,7 @@
       :data="data"
       :module-url="moduleUrl"
       position-create="end"
-      :with-actions="false"
+      :with-actions="!expandable"
       :with-create="!noCreate && !createWith"
       :expandable="expandable"
       :default-expand-all="defaultExpandAll"
