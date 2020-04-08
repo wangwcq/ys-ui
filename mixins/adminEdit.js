@@ -110,6 +110,7 @@ const mixin = {
       const lockedFields = [
         ...this.lockedFields || [],
         ...this.vLockedFields || [],
+        ...this.getExtLockedFields(item) || [],
         ..._.keys(_.get(this.$route, 'query', {})),
       ];
       _.forEach(lockedFields, field => {
@@ -127,6 +128,9 @@ const mixin = {
     },
     async handleFetchDataRes(res) {
       return res;
+    },
+    getExtLockedFields() { // params: res
+      return [];
     },
     async handleSubmit() {
       try {
