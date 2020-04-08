@@ -69,6 +69,14 @@ export default (iVue, options = {}) => {
     adminTable: {
       actionsColPosition: 'right',
     },
+    mixinAdminEdit: {
+      defaultBehavior: (ctx) => () => {
+        ctx.$router.push(`${ctx.moduleUrl}/`);
+      },
+      defaultBehaviorButtonText: '返回列表',
+      defaultBehaviorInstructions: '(3秒后自动返回列表)',
+      defaultBehaviorDelay: 3000,
+    },
   }, componentsConfig);
 
   Vue.mixin({

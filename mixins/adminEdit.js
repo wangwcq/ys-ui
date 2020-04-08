@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import { MessageBox } from 'element-ui';
 
+const COMPONENT_CONFIG_KEY = 'mixinAdminEdit';
+
 const mixin = {
   props: {
     moduleUrl: { type: String, default: '/' },
@@ -13,12 +15,13 @@ const mixin = {
       type: Function,
       default: function(res) {
         let isDecided = false;
-        const defaultBehavior = () => {
-          this.$router.push(`${this.moduleUrl}/`);
-        };
-
-        this.$confirm('请选择下一步操作(3秒后自动返回列表)', '已保存', {
-          confirmButtonText: '返回列表',
+        const defaultBehaviorFactory = this.$getComponentConfig(COMPONENT_CONFIG_KEY, 'defaultBehavior');
+        const defaultBehavior = defaultBehaviorFactory(this);
+        const defaultBehaviorInstructions = this.$getComponentConfig(COMPONENT_CONFIG_KEY, 'defaultBehaviorInstructions');
+        const defaultBehaviorButtonText = this.$getComponentConfig(COMPONENT_CONFIG_KEY, 'defaultBehaviorButtonText');
+        const defaultBehaviorDelay = this.$getComponentConfig(COMPONENT_CONFIG_KEY, 'defaultBehaviorDelay');
+        this.$confirm('请选择下一步操作 ' + defaultBehaviorInstructions, '已保存', {
+          confirmButtonText: defaultBehaviorButtonText,
           cancelButtonText: '继续编辑',
           type: 'success',
           showCancelButton: Boolean(this.id || _.get(res, 'id')),
@@ -38,12 +41,14 @@ const mixin = {
           }
         });
 
-        setTimeout(() => {
-          if (isDecided) return;
-          isDecided = true;
-          MessageBox.close();
-          defaultBehavior();
-        }, 3000);
+        if (defaultBehaviorDelay) {
+          setTimeout(() => {
+            if (isDecided) return;
+            isDecided = true;
+            MessageBox.close();
+            defaultBehavior();
+          }, defaultBehaviorDelay);
+        }
       },
     },
     lockedFields: { type: Array, default: () => [] },
