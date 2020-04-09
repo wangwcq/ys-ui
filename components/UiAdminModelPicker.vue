@@ -113,7 +113,11 @@
         this.dialogTableVisible = false;
       },
       async fetchData() {
-        let { attributes, list } = await this.withLoading(this.api(this.url || this.$getComponentConfig('adminModelPicker', 'getApi')(this.config.model.appData.apiName)));
+        let { attributes, list } = await this.withLoading(this.api(this.url || this.$getComponentConfig('adminModelPicker', 'getApi')(this.config.model.appData.apiName), {}, {
+          headers: {
+            'x-api-from': 'apiModel',
+          },
+        }));
         this.tableData = [...list];
         list = _.map(list, item => {
           let label = _.map(this.config.model.titleFields, titleField => {

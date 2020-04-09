@@ -10,15 +10,19 @@ export default {
           error,
           defaultValue = null,
           withMessage = true,
+          headers = {},
         } = config;
         let res = null;
         try {
           if (method.toUpperCase() === 'GET') {
             res = await axios.get(api, {
               params: data,
+              headers,
             });
           } else {
-            res = await axios.post(api, data);
+            res = await axios.post(api, data, {
+              headers,
+            });
           }
           res = res.data;
           if (res.code !== 0) throw new Error(res.message);
