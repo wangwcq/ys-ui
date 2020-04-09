@@ -70,6 +70,7 @@ const mixin = {
       withCustomFields: true,
       dataReadonly: false,
       vLockedFields: [],
+      upperLevelUrl: `${this.moduleUrl}/`,
     };
   },
   computed: {

@@ -71,7 +71,7 @@ export default (iVue, options = {}) => {
     },
     mixinAdminEdit: {
       defaultBehavior: (ctx) => () => {
-        ctx.$router.push(`${ctx.moduleUrl}/`);
+        ctx.$router.push(ctx.upperLevelUrl);
       },
       defaultBehaviorButtonText: '返回列表',
       defaultBehaviorInstructions: '(3秒后自动返回列表)',
