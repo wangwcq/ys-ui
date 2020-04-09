@@ -1,10 +1,13 @@
 {
   "name": "@yishitec/web",
-  "version": "2.13.0",
+  "version": "2.13.1",
   "description": "",
   "main": "index.js",
   "author": "Chris Wang",
   "license": "MIT",
+  "scripts": {
+    "ver": "yarn publish"
+  },
   "dependencies": {
     "@koa/multer": "^2.0.2",
     "async-dash": "^1.0.3",
