@@ -45,5 +45,9 @@
   },
   "devDependencies": {
     "np": "^5.0.3"
+  },
+  "vetur": {
+    "tags": "tags.json",
+    "attributes": "attributes.json"
   }
 }
