@@ -1,5 +1,11 @@
 /* eslint-disable no-console */
 const _ = require('lodash');
+const http = require('http');
+const https = require('https');
+const {
+  default: sslify, // middleware factory
+  resolver: xForwardedProtoResolver, // resolver needed
+} = require('koa-sslify');
 const merge = require('lodash/merge');
 const requireDir = require('require-dir');
 const Koa = require('koa');
@@ -25,6 +31,11 @@ let logger = Logger('server');
 const defaultConfig = {
   appName: 'MyAPP',
   port: '8001', // Since vue-cli projects host on port 8000 by default
+  httpsPort: null,
+  httpsCerts: {
+    key: null,
+    pem: null,
+  },
   apiBase: '/api',
   useHelloWorld: true,
   useDebugger: true,
@@ -79,22 +90,32 @@ class App {
       await next();
       requests -= 1;
       const time = Date.now() - ctx.startTime;
-      logger.info({
-        statusCode: ctx.res.statusCode,
-        body: ctx.body,
-      }, `Route Output ${ctx.requestUUID} ${ctx.req.url} +${time}ms ${requests} connections active`);
+      logger.info(
+        {
+          statusCode: ctx.res.statusCode,
+          body: ctx.body,
+        },
+        `Route Output ${ctx.requestUUID} ${ctx.req.url} +${time}ms ${requests} connections active`,
+      );
     });
 
-    app.use(koaBody({
-      "formLimit":"50mb",
-      "jsonLimit":"50mb",
-      "textLimit":"50mb"
-    }));
-    app.use(koaSession({
-      key: config.appName,
-      rolling: true,
-      renew: true,
-    }, app));
+    app.use(
+      koaBody({
+        formLimit: '50mb',
+        jsonLimit: '50mb',
+        textLimit: '50mb',
+      }),
+    );
+    app.use(
+      koaSession(
+        {
+          key: config.appName,
+          rolling: true,
+          renew: true,
+        },
+        app,
+      ),
+    );
     const router = new KoaRouter();
     router.prefix(config.apiBase);
     if (config.useHelloWorld) {
@@ -131,7 +152,8 @@ class App {
         },
         swagger: {
           summary: 'Toggle debug mode',
-          description: 'Should open debug mode. \n\nWhen debug mode is open, all server requests and logs will be printed to a temp file. \n\nWhen debug mode is turned off, the logs file will be removed. ',
+          description:
+            'Should open debug mode. \n\nWhen debug mode is open, all server requests and logs will be printed to a temp file. \n\nWhen debug mode is turned off, the logs file will be removed. ',
           tags: ['Debug'],
           responses: swagger.schemas.commonRes({
             200: {
@@ -167,7 +189,10 @@ class App {
         method: 'get',
         validate: {
           params: {
-            lines: Joi.number().integer().min(1).max(100)
+            lines: Joi.number()
+              .integer()
+              .min(1)
+              .max(100)
               .description('Lines to query'),
           },
         },
@@ -177,22 +202,34 @@ class App {
           responses: {
             200: {
               description: 'Success',
-              schema: swagger.schemas.jsonRes(Joi.array().items(Joi.object().description('Server log by pino').example({
-                level: 30,
-                time: 1559816497869,
-                pid: 25733,
-                hostname: 'wangchaoqis-MacBook-Pro.local',
-                name: 'server',
-                msg: 'Server Debugger on',
-                v: 1,
-              }))),
+              schema: swagger.schemas.jsonRes(
+                Joi.array().items(
+                  Joi.object().description('Server log by pino').example({
+                    level: 30,
+                    time: 1559816497869,
+                    pid: 25733,
+                    hostname: 'wangchaoqis-MacBook-Pro.local',
+                    name: 'server',
+                    msg: 'Server Debugger on',
+                    v: 1,
+                  }),
+                ),
+              ),
             },
           },
         },
         handler: async (ctx) => {
           try {
-            const loggerStr = await readLastLines.read(config.logsDir, ctx.params.lines || 10);
-            ctx.jsonOk(loggerStr.split('\n').map(x => x && JSON.parse(x)).filter(Boolean));
+            const loggerStr = await readLastLines.read(
+              config.logsDir,
+              ctx.params.lines || 10,
+            );
+            ctx.jsonOk(
+              loggerStr
+                .split('\n')
+                .map((x) => x && JSON.parse(x))
+                .filter(Boolean),
+            );
           } catch (e) {
             ctx.jsonFail(e.message);
           }
@@ -205,7 +242,8 @@ class App {
         swagger: {
           tags: ['Debug'],
           summary: 'Soft restart all external service connections',
-          description: 'Useful when debug mode is on. Connection configs will be logged in file. Remember to remove the temp debug log file after debugging.',
+          description:
+            'Useful when debug mode is on. Connection configs will be logged in file. Remember to remove the temp debug log file after debugging.',
           responses: {
             200: {
               description: 'Success',
@@ -242,7 +280,9 @@ class App {
     };
 
     console.log(paths.resolve('./server/services'));
-    app.context.services = requireDir(paths.resolve('./server/services'), { recurse: true });
+    app.context.services = requireDir(paths.resolve('./server/services'), {
+      recurse: true,
+    });
 
     this.config = config;
     this.app = app;
@@ -270,8 +310,47 @@ class App {
     app.use(router.middleware());
     swagger.add(app, config.apiBase);
 
-    app.listen(config.port, '0.0.0.0');
-    console.log(chalk.bgBlue.black.bold(`${config.appName} Server started on port ${config.port}`));
+    let serversListenedCount = 0;
+
+    if (config.httpsPort) {
+      if (!config.httpsCerts) {
+        throw new Error('HTTPS certs config is missing!');
+      }
+
+      app.use(sslify({ resolver }));
+
+      https
+        .createServer(
+          {
+            key: fs.readFileSync(
+              paths.resolve(_.get(config, 'httpsCerts.key')),
+            ),
+            cert: fs.readFileSync(
+              paths.resolve(_.get(config, 'httpsCerts.pem')),
+            ),
+          },
+          app.callback(),
+        )
+        .listen(config.httpsPort);
+      console.log(
+        chalk.bgBlue.black.bold(
+          `${config.appName} Server started on port ${config.port}`,
+        ),
+      );
+      serversListenedCount += 1;
+    }
+    if (config.port) {
+      http.createServer(app.callback()).listen(config.port);
+      console.log(
+        chalk.bgBlue.black.bold(
+          `${config.appName} Server started on port ${config.port}`,
+        ),
+      );
+      serversListenedCount += 1;
+    }
+    if (!serversListenedCount) {
+      throw new Error('Server is not listening on any port!');
+    }
   }
 }
 

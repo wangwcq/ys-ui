@@ -41,10 +41,7 @@ const utils = require('./lib/utils');
  * @returns {Promise<void>}
  */
 const main = async (config = {}) => {
-  const {
-    routers = () => {},
-    ...appConfig
-  } = config;
+  const { routers = () => {}, ...appConfig } = config;
   const app = new KoaApp(appConfig);
   await app.serverStartup();
 
@@ -52,7 +49,7 @@ const main = async (config = {}) => {
   const uploader = multer({
     storage: multer.diskStorage({
       destination: function (req, file, cb) {
-        cb(null, 'files/files/')
+        cb(null, 'files/files/');
       },
       filename: function (req, file, cb) {
         let ext;
@@ -63,7 +60,7 @@ const main = async (config = {}) => {
           ext = `.${ext}`;
         }
         cb(null, file.fieldname + '-' + Date.now() + ext);
-      }
+      },
     }),
   });
 
@@ -78,14 +75,12 @@ const main = async (config = {}) => {
 
   app.app.use(app.koaHistory);
   app.app.use(serve('./dist'));
-  app.app.use(serve('./files'));
+  app.app.use(serve('./files', { hidden: true }));
 
   app.serve();
 };
 
-const requireDir = (
-  baseDir = '.',
-) => {
+const requireDir = (baseDir = '.') => {
   console.log('requiredir, basedir', baseDir);
   return libRequireDir(baseDir, { recurse: true });
 };

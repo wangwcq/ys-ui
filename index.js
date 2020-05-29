@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import lodash from 'async-dash';
 import axios from 'axios';
-import moment from 'moment-timezone';
+import moment from 'moment';
 import numeral from 'numeral';
 import globalData from './mixins/globalData';
 

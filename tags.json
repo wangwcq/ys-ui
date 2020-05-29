@@ -20,6 +20,7 @@
     "defaults": [":span"],
     "description": "A column in grid system"
   },
+  "ui-button-group": {},
   "ui-button": {
     "attributes": [
       "type",
@@ -855,5 +856,36 @@
   "ui-collapse-item": {
     "attributes": ["name", "title"],
     "defaults": ["name", "title"]
+  },
+  "ui-flex": {
+    "attributes": [
+      "row",
+      "rowReverse",
+      "column",
+      "col",
+      "columnReverse",
+      "colReverse",
+      "wrap",
+      "justifyStart",
+      "jStart",
+      "justifyEnd",
+      "jEnd",
+      "around",
+      "between",
+      "even",
+      "evenly",
+      "stretch",
+      "justifyCenter",
+      "jCenter",
+      "alignStart",
+      "aStart",
+      "alignEnd",
+      "aEnd",
+      "alignCenter",
+      "aCenter",
+      "center",
+      "zero",
+      "one"
+    ]
   }
 }
