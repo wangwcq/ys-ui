@@ -2,9 +2,7 @@ const _ = require('lodash');
 const moment = require('moment');
 const Sequelize = require('sequelize');
 
-const {
-  DataTypes: T,
-} = Sequelize;
+const { DataTypes: T } = Sequelize;
 
 const ex = {};
 
@@ -16,16 +14,16 @@ ex.now = () => {
 
 ex.getFieldType = (vType) => {
   const dict = {
-    'string': T.STRING,
-    'date': T.DATEONLY,
-    'datetime': T.DATE,
-    'time': T.TIME,
-    'int': T.INTEGER,
-    'integer': T.INTEGER,
-    'text': T.TEXT('long'),
-    'float': T.FLOAT,
-    'currency': T.DECIMAL(14, 4),
-    'tag': T.STRING(25),
+    string: T.STRING,
+    date: T.DATEONLY,
+    datetime: T.DATE,
+    time: T.TIME,
+    int: T.INTEGER,
+    integer: T.INTEGER,
+    text: T.TEXT('long'),
+    float: T.FLOAT,
+    currency: T.DECIMAL(14, 4),
+    tag: T.STRING(25),
     bool: T.BOOLEAN,
     coordinate: T.DECIMAL(8, 4),
   };
@@ -43,6 +41,7 @@ ex.getListFieldType = (vType) => {
     password: 'password',
     bool: 'tag',
     hidden: 'hidden',
+    file: 'hidden',
   };
   return _.get(dict, vType, dict.string);
 };
@@ -61,6 +60,7 @@ ex.getFormFieldType = (vType) => {
     hidden: 'hidden',
     text: 'text',
     select: 'select',
+    file: 'file',
   };
   return _.get(dict, vType, dict.string);
 };
