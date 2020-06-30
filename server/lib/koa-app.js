@@ -4,7 +4,6 @@ const http = require('http');
 const https = require('https');
 const {
   default: sslify, // middleware factory
-  resolver: xForwardedProtoResolver, // resolver needed
 } = require('koa-sslify');
 const merge = require('lodash/merge');
 const requireDir = require('require-dir');
@@ -44,6 +43,7 @@ const defaultConfig = {
   logsDir: paths.resolve('./.logs'),
   serverStartup: () => {},
   historyApiFallbackWhitelist: [],
+  sessionConfig: {},
 };
 
 class App {
@@ -51,6 +51,11 @@ class App {
     const config = merge({}, defaultConfig, userConfig);
 
     const app = new Koa();
+
+    if (config.httpsPort) {
+      // app.use(sslify());
+      // TODO: 安卓无法使用307自动redirect。APP需要使用post接口，默认会给405。需要定制resolver
+    }
 
     Logger.init({ app });
     logger = Logger(config.logKey);
@@ -112,6 +117,8 @@ class App {
           key: config.appName,
           rolling: true,
           renew: true,
+          secure: false,
+          ...config.sessionConfig,
         },
         app,
       ),
@@ -317,8 +324,6 @@ class App {
         throw new Error('HTTPS certs config is missing!');
       }
 
-      app.use(sslify({ resolver }));
-
       https
         .createServer(
           {
@@ -334,7 +339,7 @@ class App {
         .listen(config.httpsPort);
       console.log(
         chalk.bgBlue.black.bold(
-          `${config.appName} Server started on port ${config.port}`,
+          `${config.appName} HTTPS Server started on port ${config.httpsPort}`,
         ),
       );
       serversListenedCount += 1;
