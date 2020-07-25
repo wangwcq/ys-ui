@@ -49,7 +49,7 @@
           :attributes="tableAttributes"
           :data="tableData"
           :model="config.model.appData.apiName"
-          :module-url="`/${config.model.appData.apiName}`"
+          :module-url="$getComponentConfig('adminModelPicker', 'getModuleUrl')(config.model.appData.apiName)"
           :with-actions="false"
           create-target="_blank"
           with-refresh
@@ -67,7 +67,7 @@
           <ui-link
               v-if="!config.hideView"
               target="_blank"
-              :href="`/${config.model.appData.apiName}/edit/${row.id}`"
+              :href="$getComponentConfig('adminModelPicker', 'getViewUrlById')(config.model.appData.apiName, row.id)"
           >查看</ui-link>
         </template>
       </ui-admin-table>

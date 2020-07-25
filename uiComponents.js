@@ -63,7 +63,13 @@ export default (iVue, options = {}) => {
     },
     adminModelPicker: {
       getApi: (apiName) => {
-        return `/api/${_.kebabCase(apiName)}/list`;
+        return `/api/${apiName.split('/').map(_.kebabCase).join('/')}/list`;
+      },
+      getModuleUrl: (apiName) => {
+        return `/${apiName}`;
+      },
+      getViewUrlById: (apiName, id) => { 
+        return `/${apiName}/edit/${id}`;
       },
     },
     adminTable: {

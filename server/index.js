@@ -1,12 +1,8 @@
 const lodash = require('async-dash');
 const Sequelize = require('sequelize');
-const Koa = require('koa');
 const fs = require('fs-extra');
 const serve = require('koa-static');
-const KoaBody = require('koa-body');
 const libRequireDir = require('require-dir');
-const paths = require('path');
-const proxy = require('koa-proxies');
 const Router = require('koa-router');
 const moment = require('moment');
 const multer = require('@koa/multer');
@@ -74,8 +70,16 @@ const main = async (config = {}) => {
   routers(app.router);
 
   app.app.use(app.koaHistory);
-  app.app.use(serve('./dist'));
-  app.app.use(serve('./files', { hidden: true }));
+  app.app.use(serve('./dist', {
+    maxage: 4 * 3600000,
+    defer: true,
+    gzip: true,
+  }));
+  app.app.use(serve('./files', {
+    maxage: 30 * 24 * 3600000,
+    defer: true,
+    gzip: true,
+  }));
 
   app.serve();
 };

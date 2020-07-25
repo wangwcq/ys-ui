@@ -3,10 +3,14 @@
 ## Install
 
 ```shell script
+echo "dist\nnode_modules" > .gitignore
 npm i -S @yishitec/web
-npm i nodemon @vue/cli-service less less-loader sass-loader node-sass vue-template-compiler -D
+npm i nodemon @vue/cli-service less less-loader sass-loader node-sass vue-template-compiler vue-cli-plugin-style-resources-loader style-resources-loader -D
 mkdir server
 mkdir server/services
+mkdir public
+touch public/index.html
+touch public/favicon.ico
 mkdir src
 touch src/main.js
 mkdir src/views
@@ -14,12 +18,14 @@ touch src/views/Home.vue
 mkdir src/assets
 mkdir src/assets/images
 mkdir src/assets/images/logo
+touch src/assets/images/logo/logo-horizontal.png
 mkdir src/assets/styles
-touch src/assets/styles/app-mixins.less
-touch src/assets/styles/app.less
+touch src/assets/styles/app-mixins.scss
+touch src/assets/styles/app.scss
 mkdir src/components
 touch web.d.ts
 touch vue.config.js
+echo "OK"
 ```
 
 ### package.json
@@ -38,9 +44,19 @@ touch vue.config.js
 ### vue.config.js
 
 ```javascript
+const paths = require('path');
+
 module.exports = {
   devServer: {
     proxy: 'http://localhost:3000',
+  },
+  pluginOptions: {
+    'style-resources-loader': {
+      preProcessor: 'scss',
+      patterns: [
+        paths.resolve(__dirname, './src/assets/styles/app-mixins.scss'),
+      ],
+    },
   },
 };
 ```
@@ -93,6 +109,33 @@ const {
 
 ```javascript
 import { login } from '@yishitec/web/core';
+```
+
+### Public/index.html
+
+`public/index.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+    <title>欢迎使用</title>
+  </head>
+  <body>
+    <noscript>
+      <strong
+        >We're sorry but workspace-chris doesn't work properly without
+        JavaScript enabled. Please enable it to continue.</strong
+      >
+    </noscript>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>
 ```
 
 ### Main
@@ -222,6 +265,10 @@ interface ModelCommon {
 
 `/server/clients/db.js`
 
+Variables:
+
+- `{DB_NAME}`
+
 ```javascript
 const {
   _, Sequelize, initDb, consts,
@@ -229,7 +276,7 @@ const {
 
 const { Op } = Sequelize;
 
-const DB_NAME = 'zeba66';
+const DB_NAME = '{DB_NAME}';
 
 const ex = {
   Sequelize,
@@ -268,7 +315,7 @@ module.exports = ex;
 
 ```
 
-`/server/index.js`
+### `/server/index.js`
 
 ```javascript
 const { _, main, consts, utils, moment } = require('@yishitec/web/server');
@@ -297,7 +344,7 @@ main({
     });
     await Promise.all([]);
   },
-  routers: router => {
+  routers: (router) => {
     router.use(async (ctx, next) => {
       const startTime = Date.now();
       requestIndex += 1;
@@ -316,7 +363,7 @@ main({
       });
     });
 
-    router.post('/login', async ctx => {
+    router.post('/login', async (ctx) => {
       const { username, password, appId = 1 } = ctx.request.body;
       if (!username) throw new Error('请输入用户名');
       if (!password) throw new Error('请输入密码');
@@ -343,7 +390,7 @@ main({
       await next();
     };
 
-    router.post('/whoami', sessionAuth, async ctx => {
+    router.post('/whoami', sessionAuth, async (ctx) => {
       const findUser = await db.models.User.findOne({
         where: {
           id: ctx.session.user.id,
@@ -361,14 +408,14 @@ main({
       ctx.jsonOk(user);
     });
 
-    router.post('/change-password', sessionAuth, async ctx => {
+    router.post('/change-password', sessionAuth, async (ctx) => {
       const { oldPassword, newPassword, newPassword2 } = ctx.request.body;
       if (!oldPassword) throw new Error('请输入旧密码');
       if (newPassword !== newPassword2) throw new Error('两次新密码输入不一致');
       if (!newPassword) throw new Error('请输入新密码');
       if (newPassword.length < 4)
         throw new Error('为了您的账号安全，密码长度应大于4位');
-      await db.db.transaction(async transaction => {
+      await db.db.transaction(async (transaction) => {
         await db.models.User.update(
           {
             password: utils.encodePassword(newPassword),
@@ -384,7 +431,7 @@ main({
       ctx.jsonOk('OK');
     });
 
-    router.post('/logout', async ctx => {
+    router.post('/logout', async (ctx) => {
       // eslint-disable-next-line no-param-reassign
       delete ctx.session.user;
       ctx.jsonOk();
@@ -395,12 +442,12 @@ main({
       console.log('DML synced. ');
     };
 
-    router.get('/migrate/sync', async ctx => {
+    router.get('/migrate/sync', async (ctx) => {
       await syncDb();
       ctx.jsonOk('OK');
     });
 
-    router.get('/migrate/seed', async ctx => {
+    router.get('/migrate/seed', async (ctx) => {
       await db.models.User.findOrCreate({
         where: {
           username: 'admin',
@@ -416,5 +463,10 @@ main({
     });
   },
 });
-;
+```
+
+# Verify
+
+```shell
+npm run dev
 ```
