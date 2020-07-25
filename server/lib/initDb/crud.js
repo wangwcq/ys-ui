@@ -145,10 +145,12 @@ ex.buildCrudUtils = (model, models) => {
   model.crud.formAttributes = getFormAttributes(fields);
   model.crud.newItem = (ctx = {}, defaultData = {}) => {
     let item = {};
+    item = createNewItemByFields(model.crud.formAttributes);
     if (fields._newItem) {
-      item = fields._newItem(ctx);
-    } else {
-      item = createNewItemByFields(model.crud.formAttributes);
+      item = {
+        ...item,
+        ...fields._newItem(ctx),
+      };
     }
     return _.extend({}, item, defaultData, { ..._.get(ctx, 'request.body') });
   };

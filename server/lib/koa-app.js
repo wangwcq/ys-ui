@@ -20,6 +20,8 @@ const fs = require('fs-extra');
 const readLastLines = require('read-last-lines');
 const paths = require('path');
 const swagger = require('./swagger');
+const KoaConditionalGet = require('koa-conditional-get');
+const KoaEtag = require('koa-etag');
 
 const { Joi } = swagger;
 
@@ -44,6 +46,10 @@ const defaultConfig = {
   serverStartup: () => {},
   historyApiFallbackWhitelist: [],
   sessionConfig: {},
+  handleRequestError: (error, ctx, next) => {
+    console.error(error);
+    ctx.jsonFail(e.message, undefined, 200);
+  },
 };
 
 class App {
@@ -51,6 +57,9 @@ class App {
     const config = merge({}, defaultConfig, userConfig);
 
     const app = new Koa();
+
+    app.use(KoaConditionalGet());
+    app.use(KoaEtag());
 
     if (config.httpsPort) {
       // app.use(sslify());
@@ -78,8 +87,7 @@ class App {
       try {
         await next();
       } catch (e) {
-        console.error(e);
-        ctx.jsonFail(e.message, undefined, 200);
+        config.handleRequestError(e, ctx, next);
       }
     });
 
@@ -338,7 +346,7 @@ class App {
         )
         .listen(config.httpsPort);
       console.log(
-        chalk.bgBlue.black.bold(
+        chalk.bgBlue.white.bold(
           `${config.appName} HTTPS Server started on port ${config.httpsPort}`,
         ),
       );
@@ -347,7 +355,7 @@ class App {
     if (config.port) {
       http.createServer(app.callback()).listen(config.port);
       console.log(
-        chalk.bgBlue.black.bold(
+        chalk.bgBlue.white.bold(
           `${config.appName} Server started on port ${config.port}`,
         ),
       );
