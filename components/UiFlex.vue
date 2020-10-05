@@ -22,6 +22,7 @@
         'ui-flex--one': one,
       },
     ]"
+    v-on="$listeners"
   >
     <slot></slot>
   </div>

@@ -48,7 +48,7 @@ const defaultConfig = {
   sessionConfig: {},
   handleRequestError: (error, ctx, next) => {
     console.error(error);
-    ctx.jsonFail(e.message, undefined, 200);
+    ctx.jsonFail(error.message, undefined, 200);
   },
 };
 
@@ -332,19 +332,24 @@ class App {
         throw new Error('HTTPS certs config is missing!');
       }
 
-      https
-        .createServer(
-          {
-            key: fs.readFileSync(
-              paths.resolve(_.get(config, 'httpsCerts.key')),
-            ),
-            cert: fs.readFileSync(
-              paths.resolve(_.get(config, 'httpsCerts.pem')),
-            ),
-          },
-          app.callback(),
-        )
-        .listen(config.httpsPort);
+      const httpsOptions = {};
+
+      if (_.get(config, 'httpsCerts.key') && _.get(config, 'httpsCerts.pem')) {
+        _.extend(httpsOptions, {
+          key: fs.readFileSync(paths.resolve(_.get(config, 'httpsCerts.key'))),
+          cert: fs.readFileSync(paths.resolve(_.get(config, 'httpsCerts.pem'))),
+        });
+      } else if (
+        _.get(config, 'httpsCerts.pfx') &&
+        _.get(config, 'httpsCerts.passphrase')
+      ) {
+        _.extend(httpsOptions, {
+          pfx: fs.readFileSync(paths.resolve(_.get(config, 'httpsCerts.pfx'))),
+          passphrase: _.get(config, 'httpsCerts.passphrase'),
+        });
+      }
+
+      https.createServer(httpsOptions, app.callback()).listen(config.httpsPort);
       console.log(
         chalk.bgBlue.white.bold(
           `${config.appName} HTTPS Server started on port ${config.httpsPort}`,

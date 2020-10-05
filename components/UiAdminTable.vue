@@ -19,8 +19,9 @@
           icon="el-icon-refresh"
           @click="() => $emit('refresh')"
           class="ml"
-          >刷新</ui-button
         >
+          刷新
+        </ui-button>
         <slot name="toolbar"></slot>
       </ui-flex>
       <ui-flex zero v-if="withSearch">
@@ -38,7 +39,10 @@
       :max-height="maxHeight"
       :stripe="stripe"
       @filter-change="handleFilterChange"
+      @selection-change="handleSelectionChange"
+      v-bind="tableProps"
     >
+      <ui-table-column v-if="withSelect" type="selection" width="55" />
       <ui-table-column v-if="expandable" type="expand">
         <template slot-scope="scope">
           <slot name="column__expand" v-bind="scope">
@@ -144,7 +148,7 @@
             :target="createTarget"
           >
             <ui-button
-              style="width: 100%;"
+              style="width: 100%"
               size="small"
               type="primary"
               plain
@@ -169,178 +173,186 @@
 </template>
 
 <script>
-  import _ from "lodash";
-  import UiTypeDisplay from "./UiTypeDisplay";
-  import { containsText, flattenedValues } from "../index";
+import _ from 'lodash';
+import UiTypeDisplay from './UiTypeDisplay';
+import { containsText, flattenedValues } from '../index';
 
-  const COMPONENT_CONFIG_KEY = "adminTable";
+const COMPONENT_CONFIG_KEY = 'adminTable';
 
-  export default {
-    name: "UiAdminTable",
-    components: { UiTypeDisplay },
-    props: {
-      moduleUrl: { type: String, default: "/home" },
-      attributes: { type: Array, default: () => [] },
-      data: { type: Array, default: () => [] },
-      withCreate: { type: Boolean, default: true },
-      createTarget: { type: String, default: "" },
-      createButtonText: { type: String, default: "创建" },
-      withActions: { type: Boolean, default: true },
-      actionsColPosition: {
-        type: String,
-        default: null,
-        validator: (value) => [null, "right", "left"].includes(value),
-      },
-      withDelete: { type: Boolean, default: true },
-      withRefresh: { type: Boolean, default: false },
-      withSearch: { type: Boolean, default: true },
-      positionCreate: { type: String, default: "toolbar" }, // toolbar, end
-      expandable: { type: Boolean, default: false },
-      defaultExpandAll: { type: Boolean, default: false },
-      linkCreate: { type: String, default: undefined },
-      handleCreate: { type: Function, default: null },
-      showHeader: { type: Boolean, default: true },
-      maxHeight: { type: [String, Number] },
-      paginationMethod: { type: String, default: "front-end" },
-      stripe: { type: Boolean, default: false },
-      isEditView: { type: Boolean, default: true },
-      alwaysDisplayPagination: { type: Boolean, default: false },
+export default {
+  name: 'UiAdminTable',
+  components: { UiTypeDisplay },
+  props: {
+    moduleUrl: { type: String, default: '/home' },
+    attributes: { type: Array, default: () => [] },
+    data: { type: Array, default: () => [] },
+    withCreate: { type: Boolean, default: true },
+    createTarget: { type: String, default: '' },
+    createButtonText: { type: String, default: '创建' },
+    withActions: { type: Boolean, default: true },
+    actionsColPosition: {
+      type: String,
+      default: null,
+      validator: (value) => [null, 'right', 'left'].includes(value),
     },
-    emits: ["refresh"],
+    withDelete: { type: Boolean, default: true },
+    withRefresh: { type: Boolean, default: false },
+    withSearch: { type: Boolean, default: true },
+    positionCreate: { type: String, default: 'toolbar' }, // toolbar, end
+    expandable: { type: Boolean, default: false },
+    defaultExpandAll: { type: Boolean, default: false },
+    linkCreate: { type: String, default: undefined },
+    handleCreate: { type: Function, default: null },
+    showHeader: { type: Boolean, default: true },
+    maxHeight: { type: [String, Number] },
+    paginationMethod: { type: String, default: 'front-end' },
+    stripe: { type: Boolean, default: false },
+    isEditView: { type: Boolean, default: true },
+    alwaysDisplayPagination: { type: Boolean, default: false },
+    withSelect: { type: Boolean, default: false },
+    selection: { type: Array, default: () => [] },
+  },
+  emits: ['refresh', 'update:selected'],
+  data() {
+    const pageSize = 10;
+    return {
+      searchKeyword: '',
+      currentPage: 1,
+      pageSize,
+      columnFilters: {},
+    };
+  },
+  computed: {
+    columns() {
+      const cols = [];
+      const actionsColPosition =
+        this.actionsColPosition ||
+        this.$getComponentConfig(COMPONENT_CONFIG_KEY, 'actionsColPosition');
+      if (this.withActions && actionsColPosition === 'left') {
+        cols.push({
+          name: '_adminActions',
+          title: '操作',
+          width: 180,
+          align: 'left',
+        });
+      }
+      cols.push(...this.attributes);
+      if (this.withActions && actionsColPosition === 'right') {
+        cols.push({
+          name: '_adminActions',
+          title: '操作',
+          width: 180,
+          align: 'left',
+        });
+      }
+      return cols;
+    },
+    vLinkCreate() {
+      if (_.isFunction(this.handleCreate)) {
+        return null;
+      }
+      if (!_.isUndefined(this.linkCreate)) {
+        return this.linkCreate;
+      }
+      return `${this.moduleUrl}/add`;
+    },
+    filteredData() {
+      return _.filter(this.data, (row) => {
+        let flag = true;
+
+        if (
+          this.searchKeyword &&
+          !containsText(flattenedValues(row).join(' '), this.searchKeyword)
+        ) {
+          return false;
+        }
+        _.forEach(this.columnFilters, (filterValues, filterColName) => {
+          console.log({ filterValues, filterColName });
+          if (filterValues.length) {
+            if (!filterValues.includes(row[filterColName])) {
+              flag = false;
+              return false;
+            }
+            return true;
+          }
+        });
+        if (!flag) return false;
+
+        return true;
+      });
+    },
+    pagedData() {
+      let start = 0;
+      let end = this.filteredData.length;
+      if (this.paginationMethod === 'front-end') {
+        start = (this.currentPage - 1) * this.pageSize;
+        end = start + this.pageSize;
+      }
+      return _.slice(this.filteredData, start, end);
+    },
+    totalItems() {
+      return this.filteredData.length;
+    },
+    tableProps() {
+      return _.omit(this.$attrs, [..._.keys(this.$props)]);
+    },
+  },
+  watch: {
     data() {
-      const pageSize = 10;
-      return {
-        searchKeyword: "",
-        currentPage: 1,
-        pageSize,
-        columnFilters: {},
+      this.currentPage = 1;
+    },
+    searchKeyword() {
+      this.currentPage = 1;
+    },
+  },
+  methods: {
+    handleSizeChange(pageSize) {
+      this.pageSize = pageSize;
+    },
+    handleCurrentChange(currentPage) {
+      this.currentPage = currentPage;
+    },
+    handleFilterChange(ev) {
+      const columnKey = _.keys(ev)[0];
+      const eventOption = _.values(ev)[0];
+      const eventData = {
+        col: _.find(
+          this.attributes,
+          (compareCol) => compareCol.name === columnKey,
+        ),
+        value: eventOption,
+      };
+      this.$emit('filter-change', eventData);
+      this.columnFilters = {
+        ...this.columnFilters,
+        ...ev,
       };
     },
-    computed: {
-      columns() {
-        const cols = [];
-        const actionsColPosition =
-          this.actionsColPosition ||
-          this.$getComponentConfig(COMPONENT_CONFIG_KEY, "actionsColPosition");
-        if (this.withActions && actionsColPosition === "left") {
-          cols.push({
-            name: "_adminActions",
-            title: "操作",
-            width: 180,
-            align: "left",
-          });
-        }
-        cols.push(...this.attributes);
-        if (this.withActions && actionsColPosition === "right") {
-          cols.push({
-            name: "_adminActions",
-            title: "操作",
-            width: 180,
-            align: "left",
-          });
-        }
-        return cols;
-      },
-      vLinkCreate() {
-        if (_.isFunction(this.handleCreate)) {
-          return null;
-        }
-        if (!_.isUndefined(this.linkCreate)) {
-          return this.linkCreate;
-        }
-        return `${this.moduleUrl}/add`;
-      },
-      filteredData() {
-        return _.filter(this.data, (row) => {
-          let flag = true;
-
-          if (
-            this.searchKeyword &&
-            !containsText(flattenedValues(row).join(" "), this.searchKeyword)
-          ) {
-            return false;
-          }
-          _.forEach(this.columnFilters, (filterValues, filterColName) => {
-            console.log({ filterValues, filterColName });
-            if (filterValues.length) {
-              if (!filterValues.includes(row[filterColName])) {
-                flag = false;
-                return false;
-              }
-              return true;
-            }
-          });
-          if (!flag) return false;
-
-          return true;
-        });
-      },
-      pagedData() {
-        let start = 0;
-        let end = this.filteredData.length;
-        if (this.paginationMethod === "front-end") {
-          start = (this.currentPage - 1) * this.pageSize;
-          end = start + this.pageSize;
-        }
-        return _.slice(this.filteredData, start, end);
-      },
-      totalItems() {
-        return this.filteredData.length;
-      },
+    handleSelectionChange(val) {
+      this.$emit('update:selection', val);
     },
-    watch: {
-      data() {
-        this.currentPage = 1;
-      },
-      searchKeyword() {
-        this.currentPage = 1;
-      },
-    },
-    methods: {
-      handleSizeChange(pageSize) {
-        this.pageSize = pageSize;
-      },
-      handleCurrentChange(currentPage) {
-        this.currentPage = currentPage;
-      },
-      handleFilterChange(ev) {
-        const columnKey = _.keys(ev)[0];
-        const eventOption = _.values(ev)[0];
-        const eventData = {
-          col: _.find(
-            this.attributes,
-            (compareCol) => compareCol.name === columnKey
-          ),
-          value: eventOption,
-        };
-        this.$emit("filter-change", eventData);
-        this.columnFilters = {
-          ...this.columnFilters,
-          ...ev,
-        };
-      },
-    },
-  };
+  },
+};
 </script>
 
 <style lang="less">
-  .ui-admin-table {
-    &__toolbar {
-      margin-bottom: 15px;
+.ui-admin-table {
+  &__toolbar {
+    margin-bottom: 15px;
+  }
+  &__end {
+    margin-top: 15px;
+  }
+  .el-table__expanded-cell {
+    padding: 0;
+    .el-card.is-always-shadow,
+    .el-card.is-hover-shadow:focus,
+    .el-card.is-hover-shadow:hover {
+      box-shadow: none;
     }
-    &__end {
-      margin-top: 15px;
-    }
-    .el-table__expanded-cell {
-      padding: 0;
-      .el-card.is-always-shadow,
-      .el-card.is-hover-shadow:focus,
-      .el-card.is-hover-shadow:hover {
-        box-shadow: none;
-      }
-      .el-tabs--border-card {
-        box-shadow: none;
-      }
+    .el-tabs--border-card {
+      box-shadow: none;
     }
   }
+}
 </style>

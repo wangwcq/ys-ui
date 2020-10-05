@@ -21,7 +21,7 @@
     </template>
 
     <small v-else-if="type === 'datetime'">
-      {{ formatMoment(body) }}
+      {{ body ? formatMoment(body) : '-' }}
     </small>
 
     <small v-else-if="type === 'password'">

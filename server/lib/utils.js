@@ -72,10 +72,10 @@ ex.flattenedValues = (obj) => {
 
 ex.random = utilsRandom;
 
-ex.withTry = async (fn) => {
+ex.withTry = async (fn, ...params) => {
   try {
     if (!_.isFunction(fn)) throw new Error(errors.NOT_A_FUNCTION);
-    const res = await fn();
+    const res = await fn(...params);
     return res;
   } catch(e) {
     console.error(e);

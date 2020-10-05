@@ -8,6 +8,7 @@ const moment = require('moment');
 const multer = require('@koa/multer');
 const numeral = require('numeral');
 const axios = require('axios');
+const fastq = require('fastq');
 
 const KoaApp = require('./lib/koa-app');
 const Logger = require('./lib/logger');
@@ -20,6 +21,42 @@ const useSubList = require('./lib/useSubList/index');
 const useComments = require('./lib/useComments/index');
 
 const utils = require('./lib/utils');
+
+const handler = async (fn, cb) => {
+  try {
+    if (lodash.isFunction(fn)) {
+      const res = await fn();
+      cb(null, res);
+    }
+    cb(null, res);
+  } catch (e) {
+    cb(e);
+  }
+};
+const globalQueue = fastq(handler, 1);
+const queue = (fn, q = globalQueue) => {
+  return async (...params) => {
+    const res = await new Promise((resolve, reject) => {
+      q.push(
+        async () => {
+          if (lodash.isFunction(fn)) {
+            const res = await fn(...params);
+            return res;
+          }
+          return fn;
+        },
+        (err, result) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(result);
+        },
+      );
+    });
+    return res;
+  };
+};
 
 /**
  * @param {Object} config
@@ -60,9 +97,15 @@ const main = async (config = {}) => {
     }),
   });
 
-  app.router.post('/upload', uploader.single('file'), async (ctx) => {
+  app.router.post('/upload', queue(uploader.single('file')), async (ctx) => {
     ctx.jsonOk({
-      ...ctx.file,
+      ...lodash.pick(ctx.file, [
+        'encoding',
+        'filename',
+        'mimetype',
+        'originalname',
+        'size',
+      ]),
       url: `/files/${ctx.file.filename}`,
     });
   });
@@ -70,16 +113,20 @@ const main = async (config = {}) => {
   routers(app.router);
 
   app.app.use(app.koaHistory);
-  app.app.use(serve('./dist', {
-    maxage: 4 * 3600000,
-    defer: true,
-    gzip: true,
-  }));
-  app.app.use(serve('./files', {
-    maxage: 30 * 24 * 3600000,
-    defer: true,
-    gzip: true,
-  }));
+  app.app.use(
+    serve('./dist', {
+      maxage: 4 * 3600000,
+      defer: true,
+      gzip: true,
+    }),
+  );
+  app.app.use(
+    serve('./files', {
+      maxage: 30 * 24 * 3600000,
+      defer: true,
+      gzip: true,
+    }),
+  );
 
   app.serve();
 };
@@ -98,6 +145,8 @@ module.exports = {
   axios,
   numeral,
   moment,
+  fastq,
+  queue,
   utils,
   Router,
   consts,

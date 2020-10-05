@@ -1,11 +1,11 @@
 <template>
   <div>
-    <router-view />
+    <router-view :key="$route && $route.path" />
   </div>
 </template>
 
 <script>
-  export default {
-    name: "ContainerView"
-  }
+export default {
+  name: 'ContainerView',
+};
 </script>

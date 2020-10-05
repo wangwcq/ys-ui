@@ -21,12 +21,12 @@
 </template>
 
 <script>
-  export default {
-    name: "UiMediaBox",
-    props: {
-      noMedia: { type: Boolean, default: false },
-    },
-  }
+export default {
+  name: 'UiMediaBox',
+  props: {
+    noMedia: { type: Boolean, default: false },
+  },
+};
 </script>
 
 <style lang="less">
@@ -36,9 +36,10 @@
   font-size: 14px;
   &__media {
     margin-right: 24px;
+    flex: 0 0 auto;
   }
   &__body {
-    flex: 1;
+    flex: 1 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: center;

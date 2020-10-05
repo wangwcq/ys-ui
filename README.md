@@ -8,6 +8,10 @@ npm i -S @yishitec/web
 npm i nodemon @vue/cli-service less less-loader sass-loader node-sass vue-template-compiler vue-cli-plugin-style-resources-loader style-resources-loader -D
 mkdir server
 mkdir server/services
+touch server/services/index.js
+mkdir server/apis
+touch server/apis/index.js
+touch server/index.js
 mkdir public
 touch public/index.html
 touch public/favicon.ico
@@ -26,6 +30,36 @@ mkdir src/components
 touch web.d.ts
 touch vue.config.js
 echo "OK"
+```
+
+### Configure eslint
+
+```shell script
+npm i -D @vue/cli-plugin-eslint @vue/eslint-config-airbnb babel-eslint eslint eslint-plugin-vue
+touch .eslintrc.js
+```
+
+### `eslintrc.js`
+
+```javascript
+module.exports = {
+  env: {
+    browser: true,
+    es6: true,
+    node: true,
+  },
+  extends: ['eslint:recommended', 'plugin:vue/essential'],
+  globals: {
+    Atomics: 'readonly',
+    SharedArrayBuffer: 'readonly',
+  },
+  parserOptions: {
+    ecmaVersion: 2018,
+    sourceType: 'module',
+  },
+  plugins: ['vue'],
+  rules: {},
+};
 ```
 
 ### package.json
@@ -270,13 +304,9 @@ Variables:
 - `{DB_NAME}`
 
 ```javascript
-const {
-  _, Sequelize, initDb, consts,
-} = require('@yishitec/web/server');
+const { _, Sequelize, initDb, consts } = require('@yishitec/web/server');
 
 const { Op } = Sequelize;
-
-const DB_NAME = '{DB_NAME}';
 
 const ex = {
   Sequelize,
@@ -287,8 +317,6 @@ const ex = {
   },
 };
 
-
-/** @type {Models} */
 const models = {};
 
 ex.initDb = async () => {
@@ -299,7 +327,7 @@ ex.initDb = async () => {
     },
     {
       models,
-      associations: []i,
+      associations: [],
     },
   );
   _.extend(ex.db, res);
@@ -312,7 +340,6 @@ ex.initDb = async () => {
 };
 
 module.exports = ex;
-
 ```
 
 ### `/server/index.js`
@@ -463,6 +490,14 @@ main({
     });
   },
 });
+```
+
+### Server export dir modules
+
+```javascript
+const { requireDir } = require('@yishitec/web/server');
+
+module.exports = requireDir(__dirname);
 ```
 
 # Verify
