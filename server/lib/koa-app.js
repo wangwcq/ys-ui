@@ -117,6 +117,13 @@ class App {
         formLimit: '50mb',
         jsonLimit: '50mb',
         textLimit: '50mb',
+        parsedMethods: [
+          'GET',
+          'POST',
+          'PUT',
+          'PATCH',
+          'DELETE',
+        ],
       }),
     );
     app.use(
