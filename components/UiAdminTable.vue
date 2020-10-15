@@ -304,6 +304,9 @@ export default {
     searchKeyword() {
       this.currentPage = 1;
     },
+    pageSize() {
+      this.currentPage = 1;
+    },
   },
   methods: {
     handleSizeChange(pageSize) {
