@@ -4,9 +4,12 @@
 
 ```shell script
 echo "dist\nnode_modules" > .gitignore
-npm i -S @yishitec/web
-npm i nodemon @vue/cli-service less less-loader sass-loader node-sass vue-template-compiler vue-cli-plugin-style-resources-loader style-resources-loader -D
+cnpm i -S @yishitec/web
+cnpm i nodemon @vue/cli-service less less-loader sass-loader node-sass vue-template-compiler vue-cli-plugin-style-resources-loader style-resources-loader -D
 mkdir server
+mkdir server/clients
+touch server/clients/index.js
+touch server/clients/db.js
 mkdir server/services
 touch server/services/index.js
 mkdir server/apis
@@ -35,7 +38,7 @@ echo "OK"
 ### Configure eslint
 
 ```shell script
-npm i -D @vue/cli-plugin-eslint @vue/eslint-config-airbnb babel-eslint eslint eslint-plugin-vue
+cnpm i -D @vue/cli-plugin-eslint @vue/eslint-config-airbnb babel-eslint eslint eslint-plugin-vue
 touch .eslintrc.js
 ```
 
@@ -67,7 +70,7 @@ module.exports = {
 `scripts`
 
 ```javascript
-    "dev:server": "nodemon -w server -w /Users/wangwcq/node-www/ys-ui server/index.js",
+    "dev:server": "nodemon -w server server/index.js",
     "dev": "npm run dev:server & npm run serve",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -95,56 +98,6 @@ module.exports = {
 };
 ```
 
-## Front-end
-
-Exported:
-
-```javascript
-import {
-  Vue,
-  _, // async-dash
-  lodash, // async-dash
-  axios,
-  moment,
-  numeral,
-  main,
-  views, // see below
-  G, // an empty object for global data storage
-  formatPrice // numeral: 0,0.00
-  containsText, // moment: YYYY-MM-DD HH:mm:ss
-  flattenedValues, // flatten, uniq, can apply to object
-} from '@yishitec/web';
-
-const {
-  LoginView,
-  ContainerView,
-  PageHeaderView,
-  ErrorView,
-} = views;
-```
-
-### Available components
-
-- ...element-ui components (available by el-_ or ui-_)
-- ui-page-header
-- ui-media-box
-- ui-placeholder
-- ui-stage
-- ui-container
-- ui-flex
-- ui-admin-table
-- ui-admin-form
-- ui-data-select
-- ui-sub-list
-- ui-datetime-picker
-- ui-logo
-
-### Core logics (as Vue mixin)
-
-```javascript
-import { login } from '@yishitec/web/core';
-```
-
 ### Public/index.html
 
 `public/index.html`
@@ -161,10 +114,9 @@ import { login } from '@yishitec/web/core';
   </head>
   <body>
     <noscript>
-      <strong
-        >We're sorry but workspace-chris doesn't work properly without
-        JavaScript enabled. Please enable it to continue.</strong
-      >
+      <strong>
+        We're sorry but workspace-chris doesn't work properly without JavaScript enabled. Please enable it to continue.
+      </strong>
     </noscript>
     <div id="app"></div>
     <!-- built files will be auto injected -->
@@ -194,7 +146,7 @@ main({
   ],
   componentsConfig: {
     common: {
-      appName: '智慧工地',
+      appName: '欢迎使用',
       appLogo: require('./assets/images/logo/logo-horizontal.png'),
     },
     container: {
@@ -204,100 +156,11 @@ main({
 });
 ```
 
-## Back-end
+- 修改appName
 
-Components:
+### 放入Logo文件 `assets/images/logo/logo-horizontal.png`
 
-```javascript
-const {
-  main, // uses Koajs
-  Logger, // uses pino
-  requireDir,
-  lodash,
-  axios,
-  moment,
-  numeral,
-  _: lodash,
-  utils,
-  Router, // uses koa-joi-router
-  consts, // an object for global data storage with preset properties; see below
-  Sequelize,
-
-  initDb, // uses Sequelize
-  ensureSeedData,
-
-  useCustomFields,
-  useSubList,
-  useComments,
-} = require('@yishitec/web');
-
-const {
-  db = null,
-  env, // = process.env
-} = consts;
-```
-
-### Main
-
-`/server.d.ts`
-
-```typescript
-type Consts = {};
-
-type YishitecWeb = {
-  consts: Consts;
-  _;
-  moment;
-};
-
-type Ctx = {
-  session: {
-    user: {
-      member_id;
-      display_name;
-    };
-  };
-  params: Record<string, string>;
-  request: {
-    body: object;
-    query: Record<string, string>;
-  };
-};
-
-type AdminListQuery = {
-  currentProjects: number[] | string[];
-  filter: number | string;
-};
-
-interface ModelColumnDefinition {
-  title;
-  readonly: boolean;
-  isTitle: boolean;
-  inList: boolean;
-  type: 'password' | 'text' | 'select' | 'datetime';
-  options: string[];
-  ignored: boolean;
-  width: number;
-}
-
-type ModelColumnsDefinition = Record<string, ModelColumnDefinition>;
-
-interface ModelDefinition extends ModelColumnsDefinition {
-  _tableName;
-  _paranoid: boolean;
-  _timestamps: boolean;
-  _apiName;
-  _newItem: (ctx: Ctx) => object;
-}
-
-type Models = Record<string, ModelDefinition>;
-
-interface ModelCommon {
-  member_id: object | number | string;
-}
-```
-
-`/server/clients/db.js`
+## `/server/clients/db.js`
 
 Variables:
 
@@ -500,8 +363,157 @@ const { requireDir } = require('@yishitec/web/server');
 module.exports = requireDir(__dirname);
 ```
 
+- `server/clients/index.j`
+- `server/services/index.js`
+- `server/apis/index.js`
+
 # Verify
 
 ```shell
 npm run dev
+```
+
+
+## Front-end
+
+Exported:
+
+```javascript
+import {
+  Vue,
+  _, // async-dash
+  lodash, // async-dash
+  axios,
+  moment,
+  numeral,
+  main,
+  views, // see below
+  G, // an empty object for global data storage
+  formatPrice // numeral: 0,0.00
+  containsText, // moment: YYYY-MM-DD HH:mm:ss
+  flattenedValues, // flatten, uniq, can apply to object
+} from '@yishitec/web';
+
+const {
+  LoginView,
+  ContainerView,
+  PageHeaderView,
+  ErrorView,
+} = views;
+```
+
+### Available components
+
+- ...element-ui components (available by el-_ or ui-_)
+- ui-page-header
+- ui-media-box
+- ui-placeholder
+- ui-stage
+- ui-container
+- ui-flex
+- ui-admin-table
+- ui-admin-form
+- ui-data-select
+- ui-sub-list
+- ui-datetime-picker
+- ui-logo
+
+### Core logics (as Vue mixin)
+
+```javascript
+import { login } from '@yishitec/web/core';
+```
+
+
+## Back-end
+
+Components:
+
+```javascript
+const {
+  main, // uses Koajs
+  Logger, // uses pino
+  requireDir,
+  lodash,
+  axios,
+  moment,
+  numeral,
+  _: lodash,
+  utils,
+  Router, // uses koa-joi-router
+  consts, // an object for global data storage with preset properties; see below
+  Sequelize,
+
+  initDb, // uses Sequelize
+  ensureSeedData,
+
+  useCustomFields,
+  useSubList,
+  useComments,
+} = require('@yishitec/web');
+
+const {
+  db = null,
+  env, // = process.env
+} = consts;
+```
+
+### Main
+
+`/server.d.ts`
+
+```typescript
+type Consts = {};
+
+type YishitecWeb = {
+  consts: Consts;
+  _;
+  moment;
+};
+
+type Ctx = {
+  session: {
+    user: {
+      member_id;
+      display_name;
+    };
+  };
+  params: Record<string, string>;
+  request: {
+    body: object;
+    query: Record<string, string>;
+  };
+};
+
+type AdminListQuery = {
+  currentProjects: number[] | string[];
+  filter: number | string;
+};
+
+interface ModelColumnDefinition {
+  title;
+  readonly: boolean;
+  isTitle: boolean;
+  inList: boolean;
+  type: 'password' | 'text' | 'select' | 'datetime';
+  options: string[];
+  ignored: boolean;
+  width: number;
+}
+
+type ModelColumnsDefinition = Record<string, ModelColumnDefinition>;
+
+interface ModelDefinition extends ModelColumnsDefinition {
+  _tableName;
+  _paranoid: boolean;
+  _timestamps: boolean;
+  _apiName;
+  _newItem: (ctx: Ctx) => object;
+}
+
+type Models = Record<string, ModelDefinition>;
+
+interface ModelCommon {
+  member_id: object | number | string;
+}
 ```
