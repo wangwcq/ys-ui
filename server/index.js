@@ -140,6 +140,7 @@ module.exports = {
   main,
   Logger,
   requireDir,
+  fs,
   lodash,
   _: lodash,
   axios,
