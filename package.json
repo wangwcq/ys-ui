@@ -1,12 +1,13 @@
 {
   "name": "@yishitec/web",
-  "version": "2.21.3",
+  "version": "2.22.0",
   "description": "",
   "main": "index.js",
   "author": "Chris Wang",
   "license": "MIT",
   "scripts": {
-    "ver": "yarn publish"
+    "ver": "yarn publish",
+    "doc": "vuepress dev docs"
   },
   "dependencies": {
     "@koa/multer": "^2.0.2",
@@ -53,7 +54,8 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^7.7.0",
     "eslint-plugin-vue": "^6.2.2",
-    "np": "^5.0.3"
+    "np": "^5.0.3",
+    "vuepress": "^1.7.1"
   },
   "vetur": {
     "tags": "tags.json",

@@ -110,7 +110,7 @@ const main = async (config = {}) => {
     });
   });
 
-  routers(app.router);
+  routers(app.router, { uploader });
 
   app.app.use(app.koaHistory);
   app.app.use(
@@ -150,6 +150,7 @@ module.exports = {
   utils,
   Router,
   consts,
+  multer,
   Sequelize,
 
   initDb,
