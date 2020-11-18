@@ -32,7 +32,12 @@ const _ = lodash;
  * @param {ComponentsConfig} params.componentsConfig
  * @param {Object} params.store
  */
-function main(params = {}) {
+function main(uParams = {}) {
+  const params = {
+    extVue: {},
+    routerMode: 'history',
+    ...uParams,
+  };
   window._ = _;
   window.axios = axios;
 
@@ -42,7 +47,7 @@ function main(params = {}) {
   initUiMixins();
 
   const router = new Router({
-    mode: 'history',
+    mode: params.routerMode,
     base: process.env.BASE_URL,
     routes: [{
       path: '/',
@@ -62,6 +67,7 @@ function main(params = {}) {
     router,
     render: h => h(App),
     store: params.store,
+    ...params.extVue,
   }).$mount('#app');
 }
 

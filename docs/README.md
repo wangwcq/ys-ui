@@ -5,7 +5,7 @@
 ```shell script
 echo "dist\nnode_modules" > .gitignore
 cnpm i -S @yishitec/web
-cnpm i nodemon @vue/cli-service less less-loader sass-loader node-sass vue-template-compiler vue-cli-plugin-style-resources-loader style-resources-loader -D
+cnpm i nodemon @vue/cli-service less less-loader sass-loader node-sass vue-template-compiler vue-cli-plugin-style-resources-loader style-resources-loader pug pug-plain-loader -D
 mkdir server
 mkdir server/clients
 touch server/clients/index.js
