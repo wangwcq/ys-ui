@@ -78,7 +78,7 @@ const formatPrice = (value, format = '0,0.00') => numeral(value).format(format);
 const formatDateTime = (value, format = 'YYYY-MM-DD HH:mm:ss') => moment(value).format(format);
 
 const containsText = (text, keyword) => {
-  return String(text).toLowerCase().indexOf(String(keyword).toLowerCase()) !== -1;
+  return String(text).toLowerCase().indexOf(String(keyword || '').trim().toLowerCase()) !== -1;
 };
 
 const flattenedValues = (obj) => {

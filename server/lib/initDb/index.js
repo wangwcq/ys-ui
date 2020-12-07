@@ -56,6 +56,7 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
     let tableName = undefined;
     let timestamps = true;
     const attributes = {};
+    const ext = {};
 
     _.forEach(fields, (field, fieldName) => {
       field.name = fieldName;
@@ -65,6 +66,7 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
         else if (fieldName === '_apiName') apiName = field;
         else if (fieldName === '_tableName') tableName = field;
         else if (fieldName === '_timestamps') timestamps = field;
+        else if (fieldName === '_ext') ext = field;
         return true;
       }
       attributes[fieldName] = utils.getFieldType(field.type);
@@ -75,6 +77,7 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
       paranoid,
       tableName,
       timestamps,
+      ...ext,
     });
 
     fields._associations = [];
