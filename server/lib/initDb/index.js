@@ -66,7 +66,7 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
         else if (fieldName === '_apiName') apiName = field;
         else if (fieldName === '_tableName') tableName = field;
         else if (fieldName === '_timestamps') timestamps = field;
-        else if (fieldName === '_ext') ext = field;
+        else if (fieldName === '_ext') _.extend(ext, field);
         return true;
       }
       attributes[fieldName] = utils.getFieldType(field.type);
