@@ -25,7 +25,10 @@ ex.patchListByKey = (list = [], patch = {}, key = 'key') => {
   _.forEach(list, (item, index) => {
     let patchItem = {};
     if (_.isArray(patch)) {
-      patchItem = _.find(patch, patchItem => _.get(patchItem, key) === _.get(item, key));
+      patchItem = _.find(
+        patch,
+        patchItem => _.get(patchItem, key) === _.get(item, key),
+      );
     } else {
       patchItem = _.get(patch, _.get(item, key));
     }
@@ -36,15 +39,17 @@ ex.patchListByKey = (list = [], patch = {}, key = 'key') => {
   return ret;
 };
 
-ex.ensureArray = (obj) => {
-  if (_.isArray(obj)) { return obj; }
+ex.ensureArray = obj => {
+  if (_.isArray(obj)) {
+    return obj;
+  }
   return [obj];
 };
 
 ex.getMapFromList = (list = [], key = 'key') => {
   const ret = {};
-  _.forEach(list, (item) => {
-    ret[_.get(item,key)] = item;
+  _.forEach(list, item => {
+    ret[_.get(item, key)] = item;
   });
   return ret;
 };
@@ -59,14 +64,27 @@ ex.encodePassword = (password, method = 'md5') => {
 
 ex.formatPrice = (value, format = '0,0.00') => numeral(value).format(format);
 
-ex.formatDateTime = (value, format = 'YYYY-MM-DD HH:mm:ss') => moment(value).format(format);
+ex.formatDateTime = (value, format = 'YYYY-MM-DD HH:mm:ss') =>
+  moment(value).format(format);
 
-ex.containsText = (text, keyword) => {
-  return String(text).toLowerCase().indexOf(String(keyword).toLowerCase()) !== -1;
+ex.containsText = (text, inputKeywords, shouldSplit = true) => {
+  const keywords = String(inputKeywords)
+    .split(shouldSplit ? ' ' : undefined)
+    .filter(Boolean);
+  return keywords.reduce((ret, keyword) => {
+    return (
+      ret &&
+      String(text)
+        .toLowerCase()
+        .indexOf(String(keyword).toLowerCase()) !== -1
+    );
+  }, true);
 };
 
-ex.flattenedValues = (obj) => {
-  if (typeof obj !== "object") { return obj; }
+ex.flattenedValues = obj => {
+  if (typeof obj !== 'object') {
+    return obj;
+  }
   return _.flattenDeep(_.map(obj, item => flattenedValues(item)));
 };
 
@@ -77,7 +95,7 @@ ex.withTry = async (fn, ...params) => {
     if (!_.isFunction(fn)) throw new Error(errors.NOT_A_FUNCTION);
     const res = await fn(...params);
     return res;
-  } catch(e) {
+  } catch (e) {
     console.error(e);
     return null;
   }
