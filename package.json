@@ -1,12 +1,12 @@
 {
   "name": "@yishitec/web",
-  "version": "2.29.0",
+  "version": "2.30.0",
   "description": "## Install",
   "main": "index.js",
   "author": "Chris Wang",
   "license": "MIT",
   "scripts": {
-    "ver": "yarn publish",
+    "ver": "npm publish",
     "doc": "vuepress dev docs"
   },
   "repository": {
