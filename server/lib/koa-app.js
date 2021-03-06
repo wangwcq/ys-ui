@@ -10,6 +10,7 @@ const requireDir = require('require-dir');
 const Koa = require('koa');
 const KoaRouter = require('koa-joi-router');
 const koaBody = require('koa-body');
+const unparsed = require('koa-body/unparsed');
 const koaSession = require('koa-session');
 const { historyApiFallback } = require('koa2-connect-history-api-fallback');
 const Raven = require('raven');
@@ -22,6 +23,7 @@ const paths = require('path');
 const swagger = require('./swagger');
 const KoaConditionalGet = require('koa-conditional-get');
 const KoaEtag = require('koa-etag');
+const SocketIO = require('socket.io');
 
 const { Joi } = swagger;
 
@@ -58,6 +60,35 @@ class App {
 
     const app = new Koa();
 
+    if (config.httpsPort) {
+      if (!config.httpsCerts) {
+        throw new Error('HTTPS certs config is missing!');
+      }
+
+      const httpsOptions = {};
+
+      if (_.get(config, 'httpsCerts.key') && _.get(config, 'httpsCerts.pem')) {
+        _.extend(httpsOptions, {
+          key: fs.readFileSync(paths.resolve(_.get(config, 'httpsCerts.key'))),
+          cert: fs.readFileSync(paths.resolve(_.get(config, 'httpsCerts.pem'))),
+        });
+      } else if (
+        _.get(config, 'httpsCerts.pfx') &&
+        _.get(config, 'httpsCerts.passphrase')
+      ) {
+        _.extend(httpsOptions, {
+          pfx: fs.readFileSync(paths.resolve(_.get(config, 'httpsCerts.pfx'))),
+          passphrase: _.get(config, 'httpsCerts.passphrase'),
+        });
+      }
+
+      this.httpsServer = https.createServer(httpsOptions, app.callback());
+    }
+    if (config.port) {
+      this.httpServer = http.createServer(app.callback());
+      this.io = new SocketIO.Server(this.httpServer, {});
+    }
+
     app.use(KoaConditionalGet());
     app.use(KoaEtag());
 
@@ -72,7 +103,7 @@ class App {
     // Add sentry monitor
     if (config.sentryDsn) {
       Raven.config(config.sentryDsn).install();
-      app.on('error', (err) => {
+      app.on('error', err => {
         Raven.captureException(err, (err, eventId) => {
           console.error(err);
           console.log(`Reported error ${eventId}`);
@@ -117,13 +148,8 @@ class App {
         formLimit: '50mb',
         jsonLimit: '50mb',
         textLimit: '50mb',
-        parsedMethods: [
-          'GET',
-          'POST',
-          'PUT',
-          'PATCH',
-          'DELETE',
-        ],
+        parsedMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        includeUnparsed: true,
       }),
     );
     app.use(
@@ -153,7 +179,7 @@ class App {
             },
           },
         },
-        handler: (ctx) => {
+        handler: ctx => {
           ctx.status = 200;
           ctx.body = {
             code: 0,
@@ -184,7 +210,7 @@ class App {
             },
           }),
         },
-        handler: async (ctx) => {
+        handler: async ctx => {
           const value = Number(ctx.params.value);
           if (value) {
             app.debug = true;
@@ -226,21 +252,23 @@ class App {
               description: 'Success',
               schema: swagger.schemas.jsonRes(
                 Joi.array().items(
-                  Joi.object().description('Server log by pino').example({
-                    level: 30,
-                    time: 1559816497869,
-                    pid: 25733,
-                    hostname: 'wangchaoqis-MacBook-Pro.local',
-                    name: 'server',
-                    msg: 'Server Debugger on',
-                    v: 1,
-                  }),
+                  Joi.object()
+                    .description('Server log by pino')
+                    .example({
+                      level: 30,
+                      time: 1559816497869,
+                      pid: 25733,
+                      hostname: 'wangchaoqis-MacBook-Pro.local',
+                      name: 'server',
+                      msg: 'Server Debugger on',
+                      v: 1,
+                    }),
                 ),
               ),
             },
           },
         },
-        handler: async (ctx) => {
+        handler: async ctx => {
           try {
             const loggerStr = await readLastLines.read(
               config.logsDir,
@@ -249,7 +277,7 @@ class App {
             ctx.jsonOk(
               loggerStr
                 .split('\n')
-                .map((x) => x && JSON.parse(x))
+                .map(x => x && JSON.parse(x))
                 .filter(Boolean),
             );
           } catch (e) {
@@ -273,7 +301,7 @@ class App {
             },
           },
         },
-        handler: async (ctx) => {
+        handler: async ctx => {
           try {
             await this.serverStartup();
             ctx.jsonOk();
@@ -285,14 +313,14 @@ class App {
     }
 
     app.context.logger = logger;
-    app.context.jsonOk = function (data) {
+    app.context.jsonOk = function(data) {
       this.status = 200;
       this.body = {
         code: 0,
         data,
       };
     };
-    app.context.jsonFail = function (message, data, statusCode = 200) {
+    app.context.jsonFail = function(message, data, statusCode = 200) {
       this.status = statusCode;
       this.body = {
         code: 1,
@@ -316,6 +344,8 @@ class App {
         ...this.config.historyApiFallbackWhitelist,
       ],
     });
+
+    this.unparsed = unparsed;
   }
 
   async serverStartup() {
@@ -334,38 +364,18 @@ class App {
 
     let serversListenedCount = 0;
 
-    if (config.httpsPort) {
-      if (!config.httpsCerts) {
-        throw new Error('HTTPS certs config is missing!');
-      }
-
-      const httpsOptions = {};
-
-      if (_.get(config, 'httpsCerts.key') && _.get(config, 'httpsCerts.pem')) {
-        _.extend(httpsOptions, {
-          key: fs.readFileSync(paths.resolve(_.get(config, 'httpsCerts.key'))),
-          cert: fs.readFileSync(paths.resolve(_.get(config, 'httpsCerts.pem'))),
-        });
-      } else if (
-        _.get(config, 'httpsCerts.pfx') &&
-        _.get(config, 'httpsCerts.passphrase')
-      ) {
-        _.extend(httpsOptions, {
-          pfx: fs.readFileSync(paths.resolve(_.get(config, 'httpsCerts.pfx'))),
-          passphrase: _.get(config, 'httpsCerts.passphrase'),
-        });
-      }
-
-      https.createServer(httpsOptions, app.callback()).listen(config.httpsPort);
+    if (this.httpsServer) {
+      this.httpsServer.listen(config.httpsPort);
+      serversListenedCount += 1;
       console.log(
         chalk.bgBlue.white.bold(
           `${config.appName} HTTPS Server started on port ${config.httpsPort}`,
         ),
       );
-      serversListenedCount += 1;
     }
-    if (config.port) {
-      http.createServer(app.callback()).listen(config.port);
+
+    if (this.httpServer) {
+      this.httpServer.listen(config.port);
       console.log(
         chalk.bgBlue.white.bold(
           `${config.appName} Server started on port ${config.port}`,
@@ -373,6 +383,7 @@ class App {
       );
       serversListenedCount += 1;
     }
+
     if (!serversListenedCount) {
       throw new Error('Server is not listening on any port!');
     }

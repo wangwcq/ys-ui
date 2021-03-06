@@ -3,7 +3,7 @@
 ## Install
 
 ```shell script
-echo "dist\nnode_modules" > .gitignore
+echo "dist\node_modules" > .gitignore
 cnpm i -S @yishitec/web
 cnpm i nodemon @vue/cli-service less less-loader sass-loader node-sass vue-template-compiler vue-cli-plugin-style-resources-loader style-resources-loader -D
 mkdir server
@@ -115,7 +115,8 @@ module.exports = {
   <body>
     <noscript>
       <strong>
-        We're sorry but workspace-chris doesn't work properly without JavaScript enabled. Please enable it to continue.
+        We're sorry but workspace-chris doesn't work properly without JavaScript
+        enabled. Please enable it to continue.
       </strong>
     </noscript>
     <div id="app"></div>
@@ -156,9 +157,9 @@ main({
 });
 ```
 
-- 修改appName
+- 修改 appName
 
-### 放入Logo文件 `assets/images/logo/logo-horizontal.png`
+### 放入 Logo 文件 `assets/images/logo/logo-horizontal.png`
 
 ## `/server/clients/db.js`
 
@@ -234,7 +235,7 @@ main({
     });
     await Promise.all([]);
   },
-  routers: (router) => {
+  routers: router => {
     router.use(async (ctx, next) => {
       const startTime = Date.now();
       requestIndex += 1;
@@ -253,7 +254,7 @@ main({
       });
     });
 
-    router.post('/login', async (ctx) => {
+    router.post('/login', async ctx => {
       const { username, password, appId = 1 } = ctx.request.body;
       if (!username) throw new Error('请输入用户名');
       if (!password) throw new Error('请输入密码');
@@ -280,7 +281,7 @@ main({
       await next();
     };
 
-    router.post('/whoami', sessionAuth, async (ctx) => {
+    router.post('/whoami', sessionAuth, async ctx => {
       const findUser = await db.models.User.findOne({
         where: {
           id: ctx.session.user.id,
@@ -298,14 +299,14 @@ main({
       ctx.jsonOk(user);
     });
 
-    router.post('/change-password', sessionAuth, async (ctx) => {
+    router.post('/change-password', sessionAuth, async ctx => {
       const { oldPassword, newPassword, newPassword2 } = ctx.request.body;
       if (!oldPassword) throw new Error('请输入旧密码');
       if (newPassword !== newPassword2) throw new Error('两次新密码输入不一致');
       if (!newPassword) throw new Error('请输入新密码');
       if (newPassword.length < 4)
         throw new Error('为了您的账号安全，密码长度应大于4位');
-      await db.db.transaction(async (transaction) => {
+      await db.db.transaction(async transaction => {
         await db.models.User.update(
           {
             password: utils.encodePassword(newPassword),
@@ -321,7 +322,7 @@ main({
       ctx.jsonOk('OK');
     });
 
-    router.post('/logout', async (ctx) => {
+    router.post('/logout', async ctx => {
       // eslint-disable-next-line no-param-reassign
       delete ctx.session.user;
       ctx.jsonOk();
@@ -332,12 +333,12 @@ main({
       console.log('DML synced. ');
     };
 
-    router.get('/migrate/sync', async (ctx) => {
+    router.get('/migrate/sync', async ctx => {
       await syncDb();
       ctx.jsonOk('OK');
     });
 
-    router.get('/migrate/seed', async (ctx) => {
+    router.get('/migrate/seed', async ctx => {
       await db.models.User.findOrCreate({
         where: {
           username: 'admin',
@@ -372,7 +373,6 @@ module.exports = requireDir(__dirname);
 ```shell
 npm run dev
 ```
-
 
 ## Front-end
 
@@ -424,10 +424,9 @@ const {
 import { login } from '@yishitec/web/core';
 ```
 
-
 ## Back-end
 
-Components:
+Exports:
 
 ```javascript
 const {
@@ -458,62 +457,17 @@ const {
 } = consts;
 ```
 
-### Main
+## DB model types
 
-`/server.d.ts`
-
-```typescript
-type Consts = {};
-
-type YishitecWeb = {
-  consts: Consts;
-  _;
-  moment;
-};
-
-type Ctx = {
-  session: {
-    user: {
-      member_id;
-      display_name;
-    };
-  };
-  params: Record<string, string>;
-  request: {
-    body: object;
-    query: Record<string, string>;
-  };
-};
-
-type AdminListQuery = {
-  currentProjects: number[] | string[];
-  filter: number | string;
-};
-
-interface ModelColumnDefinition {
-  title;
-  readonly: boolean;
-  isTitle: boolean;
-  inList: boolean;
-  type: 'password' | 'text' | 'select' | 'datetime';
-  options: string[];
-  ignored: boolean;
-  width: number;
-}
-
-type ModelColumnsDefinition = Record<string, ModelColumnDefinition>;
-
-interface ModelDefinition extends ModelColumnsDefinition {
-  _tableName;
-  _paranoid: boolean;
-  _timestamps: boolean;
-  _apiName;
-  _newItem: (ctx: Ctx) => object;
-}
-
-type Models = Record<string, ModelDefinition>;
-
-interface ModelCommon {
-  member_id: object | number | string;
-}
+```
+    string: 'string',
+    datetime: 'datetime',
+    int: 'number',
+    integer: 'number',
+    tag: 'tag',
+    select: 'tag',
+    password: 'password',
+    bool: 'tag',
+    hidden: 'hidden',
+    file: 'hidden',
 ```

@@ -1,6 +1,7 @@
 const lodash = require('async-dash');
 const Sequelize = require('sequelize');
 const fs = require('fs-extra');
+const Koa = require('koa');
 const serve = require('koa-static');
 const libRequireDir = require('require-dir');
 const Router = require('koa-router');
@@ -9,6 +10,7 @@ const multer = require('@koa/multer');
 const numeral = require('numeral');
 const axios = require('axios');
 const fastq = require('fastq');
+const SocketIO = require('socket.io');
 
 const KoaApp = require('./lib/koa-app');
 const Logger = require('./lib/logger');
@@ -27,14 +29,16 @@ const handler = async (fn, cb) => {
     if (lodash.isFunction(fn)) {
       const res = await fn();
       cb(null, res);
+      return;
     }
-    cb(null, res);
+    cb(null, fn);
   } catch (e) {
     cb(e);
   }
 };
 const globalQueue = fastq(handler, 1);
 const queue = (fn, q = globalQueue) => {
+  console.log('add queue', q.length());
   return async (...params) => {
     const res = await new Promise((resolve, reject) => {
       q.push(
@@ -81,10 +85,10 @@ const main = async (config = {}) => {
   await fs.ensureDir('files/files/');
   const uploader = multer({
     storage: multer.diskStorage({
-      destination: function (req, file, cb) {
+      destination: function(req, file, cb) {
         cb(null, 'files/files/');
       },
-      filename: function (req, file, cb) {
+      filename: function(req, file, cb) {
         let ext;
         ext = file.originalname;
         ext = lodash.last(String(ext || '').split('/') || []) || '';
@@ -97,7 +101,7 @@ const main = async (config = {}) => {
     }),
   });
 
-  app.router.post('/upload', queue(uploader.single('file')), async (ctx) => {
+  app.router.post('/upload', queue(uploader.single('file')), async ctx => {
     ctx.jsonOk({
       ...lodash.pick(ctx.file, [
         'encoding',
@@ -110,7 +114,12 @@ const main = async (config = {}) => {
     });
   });
 
-  routers(app.router, { uploader });
+  routers(app.router, {
+    uploader,
+    app: app.app,
+    io: app.io,
+    unparsed: app.app,
+  });
 
   app.app.use(app.koaHistory);
   app.app.use(
@@ -153,6 +162,8 @@ module.exports = {
   consts,
   multer,
   Sequelize,
+  Koa,
+  SocketIO,
 
   initDb,
   ensureSeedData,

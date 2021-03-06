@@ -4,10 +4,7 @@ const utils = require('./utils');
 const { createAssociation } = require('./createAssociations');
 const { buildCrudUtils } = require('./crud');
 
-const {
-  Model,
-  Op,
-} = Sequelize;
+const { Model, Op } = Sequelize;
 
 module.exports = (dbConfig = {}, dbDefinition = {}) => {
   const {
@@ -18,11 +15,9 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
     database = '',
     debug = false,
     constraints = true,
+    extOptions = {},
   } = dbConfig;
-  const {
-    models: vModels,
-    associations = [],
-  } = dbDefinition;
+  const { models: vModels, associations = [] } = dbDefinition;
 
   const options = {
     host,
@@ -34,21 +29,17 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
         beforeValidate: () => db.query('SET autocommit = 1'),
       },
     },
+    ...extOptions,
   };
   if (!debug) {
     _.set(options, 'logging', () => {});
   }
-  const db = new Sequelize(
-    database,
-    username,
-    password,
-    options,
-  );
+  const db = new Sequelize(database, username, password, options);
 
   const models = {};
   _.forEach(vModels, (fields, modelName) => {
     const x = {
-      [modelName]: class extends  Model {},
+      [modelName]: class extends Model {},
     };
     const model = x[modelName];
     let paranoid = true;
@@ -81,7 +72,10 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
     });
 
     fields._associations = [];
-    fields._titleFields = _.map(_.filter(fields, field => field.isTitle), field => field.name);
+    fields._titleFields = _.map(
+      _.filter(fields, field => field.isTitle),
+      field => field.name,
+    );
     if (!fields._titleFields.length) {
       if (fields.title) fields._titleFields = ['title'];
       else if (fields.displayName) fields._titleFields = ['displayName'];
@@ -95,7 +89,7 @@ module.exports = (dbConfig = {}, dbDefinition = {}) => {
     models[modelName] = model;
   });
 
-  _.forEach(associations, (exp) => {
+  _.forEach(associations, exp => {
     createAssociation(exp, models, constraints);
   });
 

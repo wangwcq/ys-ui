@@ -4,6 +4,7 @@ import lodash from 'async-dash';
 import axios from 'axios';
 import moment from 'moment';
 import numeral from 'numeral';
+import * as SocketIO from 'socket.io-client';
 import globalData from './mixins/globalData';
 
 import App from './components/App.vue';
@@ -49,18 +50,20 @@ function main(uParams = {}) {
   const router = new Router({
     mode: params.routerMode,
     base: process.env.BASE_URL,
-    routes: [{
-      path: '/',
-      component: App,
-      children: [
-        ...(params.routes || []),
-        {
-          path: '*',
-          name: 'Miss',
-          component: views.ErrorView,
-        },
-      ],
-    }, ],
+    routes: [
+      {
+        path: '/',
+        component: App,
+        children: [
+          ...(params.routes || []),
+          {
+            path: '*',
+            name: 'Miss',
+            component: views.ErrorView,
+          },
+        ],
+      },
+    ],
   });
 
   new Vue({
@@ -75,14 +78,25 @@ const G = globalData.methods.G;
 
 const formatPrice = (value, format = '0,0.00') => numeral(value).format(format);
 
-const formatDateTime = (value, format = 'YYYY-MM-DD HH:mm:ss') => moment(value).format(format);
+const formatDateTime = (value, format = 'YYYY-MM-DD HH:mm:ss') =>
+  moment(value).format(format);
 
 const containsText = (text, keyword) => {
-  return String(text).toLowerCase().indexOf(String(keyword || '').trim().toLowerCase()) !== -1;
+  return (
+    String(text)
+      .toLowerCase()
+      .indexOf(
+        String(keyword || '')
+          .trim()
+          .toLowerCase(),
+      ) !== -1
+  );
 };
 
-const flattenedValues = (obj) => {
-  if (typeof obj !== "object") { return obj; }
+const flattenedValues = obj => {
+  if (typeof obj !== 'object') {
+    return obj;
+  }
   return _.flattenDeep(_.map(obj, item => flattenedValues(item)));
 };
 
@@ -96,10 +110,9 @@ export {
   main,
   views,
   G,
-
+  SocketIO,
   formatPrice,
   formatDateTime,
-
   containsText,
   flattenedValues,
 };
