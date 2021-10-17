@@ -78,11 +78,11 @@ const queue = (fn, q = globalQueue) => {
  * @returns {Promise<void>}
  */
 const main = async (config = {}) => {
-  const { routers = () => {}, ...appConfig } = config;
+  const { routers = () => {}, shouldReturnApp = false, ...appConfig } = config;
   const app = new KoaApp(appConfig);
   await app.serverStartup();
 
-  await fs.ensureDir('files/files/');
+  fs.ensureDirSync('files/files/');
   const uploader = multer({
     storage: multer.diskStorage({
       destination: function(req, file, cb) {
@@ -137,7 +137,12 @@ const main = async (config = {}) => {
     }),
   );
 
-  app.serve();
+  if (!shouldReturnApp) {
+    app.serve();
+  }
+
+  const ret = app.middleware();
+  return ret;
 };
 
 const requireDir = (baseDir = '.') => {

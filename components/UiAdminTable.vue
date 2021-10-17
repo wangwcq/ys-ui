@@ -66,6 +66,8 @@
           :min-width="col.minWidth"
           :align="col.align"
           :filters="col.filters"
+          :sortable="col.sortable || false"
+          :sort-by="col.sortBy || col.name"
         >
           <template slot-scope="scope">
             <slot :name="`column_${col.name}`" v-bind="scope">
@@ -89,9 +91,11 @@
                     >
                   </router-link>
                   <router-link
-                    :to="`${moduleUrl}/delete/${
-                      scope.row.id
-                    }?backUrl=${encodeURIComponent($route.fullPath)}`"
+                    :to="
+                      `${moduleUrl}/delete/${
+                        scope.row.id
+                      }?backUrl=${encodeURIComponent($route.fullPath)}`
+                    "
                     v-if="withDelete"
                   >
                     <ui-button size="mini" type="info" icon="el-icon-delete"
@@ -123,7 +127,7 @@
       class="mt"
       v-if="
         alwaysDisplayPagination ||
-        (paginationMethod && totalItems / pageSize > 1)
+          (paginationMethod && totalItems / pageSize > 1)
       "
     >
       <ui-pagination
@@ -193,7 +197,7 @@ export default {
     actionsColPosition: {
       type: String,
       default: null,
-      validator: (value) => [null, 'right', 'left'].includes(value),
+      validator: value => [null, 'right', 'left'].includes(value),
     },
     withDelete: { type: Boolean, default: true },
     withRefresh: { type: Boolean, default: false },
@@ -257,7 +261,7 @@ export default {
       return `${this.moduleUrl}/add`;
     },
     filteredData() {
-      return _.filter(this.data, (row) => {
+      return _.filter(this.data, row => {
         let flag = true;
 
         if (
@@ -321,7 +325,7 @@ export default {
       const eventData = {
         col: _.find(
           this.attributes,
-          (compareCol) => compareCol.name === columnKey,
+          compareCol => compareCol.name === columnKey,
         ),
         value: eventOption,
       };

@@ -356,11 +356,19 @@ class App {
     }
   }
 
-  async serve() {
+  middleware() {
     const { app, router, config } = this;
 
     app.use(router.middleware());
     swagger.add(app, config.apiBase);
+
+    return app.callback();
+  }
+
+  async serve() {
+    const { app, router, config } = this;
+
+    this.middleware();
 
     let serversListenedCount = 0;
 
